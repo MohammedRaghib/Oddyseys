@@ -104,13 +104,16 @@
 </head>
 
 <body>
-    <h1>ODDYSEYS FROM AFRICA</h1>
+    <h1>ODYSSEYS FROM AFRICA</h1>
     <form action="index.php" class="Form" method="post" onsubmit="stop(event)">
         <label for="customer_name">Customer Name:</label>
         <input type="text" class="customer_name" id="customer_name" name="customer_name" required>
 
-        <label for="date_of_issue">Date of issue:</label>
-        <input type="date" class="date_of_issue" id="date_of_issue" name="date_of_issue" required>
+        <label for="start_date">Start Date:</label>
+        <input type="date" class="start_date" id="start_date" name="start_date" required>
+
+        <label for="start_date">End Date</label>
+        <input type="date" class="end_date" id="end_date" name="end_date" required>
 
         <label for="country">Country</label>
         <select name="country" id="country" required>
@@ -120,15 +123,14 @@
         </select>
 
         <label for="parks" id="parksLabel" style="display: none;">Parks</label>
-        <select name="parks" id="parks" style="display: none;" required>
-        </select>
+        <select name="parks" id="parks" style="display: none;" required></select>
 
-        <label for="seasons" id="seasonsLabel">Season</label>
-        <select name="season" id="seasons" required>
-            <option value="">Select season</option>
-            <option value="low">Low</option>
-            <option value="medium">Medium</option>
-            <option value="high">High</option>
+        <label for="visitor_type">Visitor Type</label>
+        <select name="visitor_type" id="visitor_type" required>
+            <option value="">Select Visitor Type</option>
+            <option value="ea_citizen">EA CItizen</option>
+            <option value="non_ea_citizen">Non EA Citizen</option>
+            <option value="tz_resident">TZ Resident</option>
         </select>
 
         <label for="people" id="peopleLabel">Number of people</label>
@@ -143,21 +145,21 @@
             <tbody>
                 <tr>
                     <td>EA citizens</td>
-                    <td><input type="number" name="EA-Adult" class="table-input"></td>
-                    <td><input type="number" name="EA-Child!" class="table-input"></td>
-                    <td><input type="number" name="EA-Child#" class="table-input"></td>
+                    <td><input type="number" name="EA-Adult" class="table-input" min=0></td>
+                    <td><input type="number" name="EA-Child" class="table-input" min=0></td>
+                    <td><input type="number" name="EA-Infant" class="table-input" min=0></td>
                 </tr>
                 <tr>
                     <td>Non EA citizens</td>
-                    <td><input type="number" name="Non-EA-Adult" class="table-input"></td>
-                    <td><input type="number" name="Non-EA-Child!" class="table-input"></td>
-                    <td><input type="number" name="Non-EA-Child#" class="table-input"></td>
+                    <td><input type="number" name="Non-EA-Adult" class="table-input" min=0></td>
+                    <td><input type="number" name="Non-EA-Child" class="table-input" min=0></td>
+                    <td><input type="number" name="Non-EA-Infant" class="table-input" min=0></td>
                 </tr>
                 <tr>
                     <td>TZ residents</td>
-                    <td><input type="number" name="TZ-Adult" class="table-input"></td>
-                    <td><input type="number" name="TZ-Child!" class="table-input"></td>
-                    <td><input type="number" name="TZ-Child#" class="table-input"></td>
+                    <td><input type="number" name="TZ-Adult" class="table-input" min=0></td>
+                    <td><input type="number" name="TZ-Child" class="table-input" min=0></td>
+                    <td><input type="number" name="TZ-Infant" class="table-input" min=0></td>
                 </tr>
             </tbody>
         </table>
@@ -218,16 +220,16 @@
         */ 
 
         $EA_Adult = !empty($_POST['EA-Adult']) ? $_POST['EA-Adult'] : 0;
-        $EA_Child16 = !empty($_POST['EA-Child!']) ? $_POST['EA-Child!'] : 0;
-        $EA_Child5 = !empty($_POST['EA-Child#']) ? $_POST['EA-Child#'] : 0;
+        $EA_Child = !empty($_POST['EA-Child']) ? $_POST['EA-Child'] : 0;
+        $EA_Infant = !empty($_POST['EA-Infant']) ? $_POST['EA-Infant'] : 0;
 
         $Non_EA_Adult = !empty($_POST['Non-EA-Adult']) ? $_POST['Non-EA-Adult'] : 0;
-        $Non_EA_Child16 = !empty($_POST['Non-EA-Child!']) ? $_POST['Non-EA-Child!'] : 0;
-        $Non_EA_Child5 = !empty($_POST['Non-EA-Child#']) ? $_POST['Non-EA-Child#'] : 0;
+        $Non_EA_Child = !empty($_POST['Non-EA-Child']) ? $_POST['Non-EA-Child'] : 0;
+        $Non_EA_Infant = !empty($_POST['Non-EA-Infant']) ? $_POST['Non-EA-Infant'] : 0;
 
         $TZ_Adult = !empty($_POST['TZ-Adult']) ? $_POST['TZ-Adult'] : 0;
-        $TZ_Child16 = !empty($_POST['TZ-Child!']) ? $_POST['TZ-Child!'] : 0;
-        $TZ_Child5 = !empty($_POST['TZ-Child#']) ? $_POST['TZ-Child#'] : 0;
+        $TZ_Child = !empty($_POST['TZ-Child']) ? $_POST['TZ-Child'] : 0;
+        $TZ_Infant = !empty($_POST['TZ-Infant']) ? $_POST['TZ-Infant'] : 0;
 
         $dbFilePath = './oddyseys.db';
 
@@ -245,17 +247,17 @@
         };
 
         $EA_Adult_FEE = $park_details->$season_sql . 'adult_ea_citizen_fee' * $EA_Adult;
-        $EA_Child16_FEE = $park_details->$season_sql . 'child_ea_citizen_fee' * $EA_Child16;
+        $EA_Child_FEE = $park_details->$season_sql . 'child_ea_citizen_fee' * $EA_Child;
         
         $Non_EA_Adult_FEE = $park_details->$season_sql . 'adult_non_ea_citizen_fee' * $Non_EA_Adult;
-        $Non_EA_Child16_FEE = $park_details->$season_sql . 'child_non_ea_citizen_fee' * $Non_EA_Child16;
+        $Non_EA_Child_FEE = $park_details->$season_sql . 'child_non_ea_citizen_fee' * $Non_EA_Child;
         
         $TZ_Adult_FEE = $park_details->$season_sql . 'adult_tz_residents_fee' * $TZ_Adult;
-        $TZ_Child16_FEE = $park_details->$season_sql . 'child_tz_residents_fee' * $TZ_Child16;
+        $TZ_Child_FEE = $park_details->$season_sql . 'child_tz_residents_fee' * $TZ_Child;
         
-        $totalFees = $EA_Adult_FEE + $EA_Child16_FEE + 
-                    $Non_EA_Adult_FEE + $Non_EA_Child16_FEE + 
-                    $TZ_Adult_FEE + $TZ_Child16_FEE;
+        $totalFees = $EA_Adult_FEE + $EA_Child_FEE + 
+                    $Non_EA_Adult_FEE + $Non_EA_Child_FEE + 
+                    $TZ_Adult_FEE + $TZ_Child_FEE;
     }
     ?>
 </body>

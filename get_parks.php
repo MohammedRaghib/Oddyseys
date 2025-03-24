@@ -9,7 +9,7 @@ try {
     if (isset($_POST['country'])) {
         $selectedCountry = $_POST['country'];
 
-        $get_parks_query = 'SELECT name FROM parks WHERE country = :country';
+        $get_parks_query = 'SELECT name FROM park_conservation_fees WHERE country = :country';
         $park_stmt = $pdo->prepare($get_parks_query);
         $park_stmt->execute([':country' => $selectedCountry]);
 
