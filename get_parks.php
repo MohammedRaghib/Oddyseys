@@ -14,15 +14,16 @@ try {
         $park_stmt->execute([':country' => $selectedCountry]);
 
         $options = '';
+        $parks = [];
         while ($park_row = $park_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $options .= '<option value="' . htmlspecialchars($park_row['name']) . '">' . htmlspecialchars($park_row['name']) . '</option>';
+            if (!in_array($park_row['name'], $parks)) {
+                $options .= '<option value="' . htmlspecialchars($park_row['name']) . '">' . htmlspecialchars($park_row['name']) . '</option>';
+                array_push($parks, $park_row['name']);
+            }
         }
 
         echo $options;
     }
-
 } catch (PDOException $e) {
     echo '<option value="">Error: ' . htmlspecialchars($e->getMessage()) . '</option>';
 }
-
-?>

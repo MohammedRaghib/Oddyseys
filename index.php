@@ -207,29 +207,16 @@
     <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $customerName = $_POST['customer_name'];
-        $dateOfIssue = $_POST['date_of_issue'];
+        $startDate = $_POST['start_date'];
+        $endDate = $_POST['end_date'];
         $selectedPark = $_POST['parks'];
-        $season = $_POST['season'];
-        $season_sql = $season . '_seasonal_';
-
-        /* 
-        Child16 means children from age 5-15
-        Child5 means children from age 0-4
-
-        For all Child5 fees are $0
-        */ 
 
         $EA_Adult = !empty($_POST['EA-Adult']) ? $_POST['EA-Adult'] : 0;
         $EA_Child = !empty($_POST['EA-Child']) ? $_POST['EA-Child'] : 0;
-        $EA_Infant = !empty($_POST['EA-Infant']) ? $_POST['EA-Infant'] : 0;
-
         $Non_EA_Adult = !empty($_POST['Non-EA-Adult']) ? $_POST['Non-EA-Adult'] : 0;
         $Non_EA_Child = !empty($_POST['Non-EA-Child']) ? $_POST['Non-EA-Child'] : 0;
-        $Non_EA_Infant = !empty($_POST['Non-EA-Infant']) ? $_POST['Non-EA-Infant'] : 0;
-
         $TZ_Adult = !empty($_POST['TZ-Adult']) ? $_POST['TZ-Adult'] : 0;
         $TZ_Child = !empty($_POST['TZ-Child']) ? $_POST['TZ-Child'] : 0;
-        $TZ_Infant = !empty($_POST['TZ-Infant']) ? $_POST['TZ-Infant'] : 0;
 
         $dbFilePath = './oddyseys.db';
 
@@ -237,27 +224,40 @@
             $pdo = new PDO("sqlite:" . $dbFilePath);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $get_park_query = 'SELECT * FROM parks WHERE name = :parkName';
-            $park_stmt = $pdo->prepare($get_park_query);
-            $park_stmt->execute([':parkName' => $selectedPark]);
+            $check_query = "SELECT COUNT(*) FROM park_conservation_fees WHERE park_name = :parkName 
+                        AND ((start_date BETWEEN :startDate AND :endDate) OR 
+                             (end_date BETWEEN :startDate AND :endDate) OR 
+                             (:startDate BETWEEN start_date AND end_date) OR 
+                             (:endDate BETWEEN start_date AND end_date))";
+            $stmt = $pdo->prepare($check_query);
+            $stmt->execute([':parkName' => $selectedPark, ':startDate' => $startDate, ':endDate' => $endDate]);
+            $clashCount = $stmt->fetchColumn();
 
-            $park_details = $park_stmt->fetch(PDO::FETCH_ASSOC);
+            if ($clashCount > 0) {
+                echo "<p class='error'>Error: Date range conflicts with an existing booking.</p>";
+                exit();
+            }
+
+            // Fetch pricing for the given date range
+            $get_price_query = "SELECT * FROM park_fees WHERE park_name = :parkName 
+                            AND date >= :startDate AND date <= :endDate";
+            $price_stmt = $pdo->prepare($get_price_query);
+            $price_stmt->execute([':parkName' => $selectedPark, ':startDate' => $startDate, ':endDate' => $endDate]);
+
+            $totalFees = 0;
+            while ($price_row = $price_stmt->fetch(PDO::FETCH_ASSOC)) {
+                $totalFees += ($price_row['adult_ea_citizen_fee'] * $EA_Adult) +
+                    ($price_row['child_ea_citizen_fee'] * $EA_Child) +
+                    ($price_row['adult_non_ea_citizen_fee'] * $Non_EA_Adult) +
+                    ($price_row['child_non_ea_citizen_fee'] * $Non_EA_Child) +
+                    ($price_row['adult_tz_resident_fee'] * $TZ_Adult) +
+                    ($price_row['child_tz_resident_fee'] * $TZ_Child);
+            }
+
+            echo "<p>Total Fees: $$totalFees</p>";
         } catch (PDOException $e) {
             echo "<p class='error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-        };
-
-        $EA_Adult_FEE = $park_details->$season_sql . 'adult_ea_citizen_fee' * $EA_Adult;
-        $EA_Child_FEE = $park_details->$season_sql . 'child_ea_citizen_fee' * $EA_Child;
-        
-        $Non_EA_Adult_FEE = $park_details->$season_sql . 'adult_non_ea_citizen_fee' * $Non_EA_Adult;
-        $Non_EA_Child_FEE = $park_details->$season_sql . 'child_non_ea_citizen_fee' * $Non_EA_Child;
-        
-        $TZ_Adult_FEE = $park_details->$season_sql . 'adult_tz_residents_fee' * $TZ_Adult;
-        $TZ_Child_FEE = $park_details->$season_sql . 'child_tz_residents_fee' * $TZ_Child;
-        
-        $totalFees = $EA_Adult_FEE + $EA_Child_FEE + 
-                    $Non_EA_Adult_FEE + $Non_EA_Child_FEE + 
-                    $TZ_Adult_FEE + $TZ_Child_FEE;
+        }
     }
     ?>
 </body>
