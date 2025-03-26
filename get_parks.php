@@ -25,18 +25,20 @@ try {
         echo $options;
     }
     if (isset($_POST['park']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $selectedCountry = $_POST['park'];
+        $selectedPark = $_POST['park'];
 
-        $get_parks_query = 'SELECT name FROM park_hotels WHERE park = :park';
-        $hotel_stmt = $pdo->prepare($get_parks_query);
-        $hotel_stmt->execute([':park' => $selectedCountry]);
+        $get_hotels_query = 'SELECT hotel FROM park_hotels WHERE park = :park ORDER BY hotel ASC';
+        $hotel_stmt = $pdo->prepare($get_hotels_query);
+        $hotel_stmt->execute([':park' => $selectedPark]);
 
         $options = '';
+        $options .= '<option value="' . htmlspecialchars("-SELECT HOTEL-") . '">' . htmlspecialchars("-SELECT HOTEL-") . '</option>';
         $hotels = [];
-        while ($hotel_row = $hotel_stmt->fetch(PDO::FETCH_ASSOC)) {
-            if (!in_array($hotel_row['name'], $parks)) {
-                $options .= '<option value="' . htmlspecialchars($hotel_row['name']) . '">' . htmlspecialchars($park_row['name']) . '</option>';
-                array_push($hotels, $hotel_row['name']);
+
+        while ($row = $hotel_stmt->fetch(PDO::FETCH_ASSOC)) {
+            if (!in_array($row['hotel'], $hotels)) {
+                $options .= '<option value="' . htmlspecialchars($row['hotel']) . '">' . htmlspecialchars($row['hotel']) . '</option>';
+                array_push($hotels, $row['hotel']);
             }
         }
 

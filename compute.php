@@ -5,7 +5,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $extras = $post_data['extras'];
     $total = 0;
 
-
     $data = array(
         'people' => $people_data,
         'extras' => $extras,

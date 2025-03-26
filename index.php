@@ -213,21 +213,21 @@
                 <tbody class="preview-people-cost">
                     <tr>
                         <td><b>EA citizens</b></td>
-                        <td><input type="number" class="EA_Adult" min=0></td>
-                        <td><input type="number" class="EA_Child" min=0></td>
-                        <td><input type="number" class="EA_Infant" min=0></td>
+                        <td class="EA_Adult"></td>
+                        <td class="EA_Child"></td>
+                        <td class="EA_Infant"></td>
                     </tr>
                     <tr>
                         <td><b>Non EA citizens</b></td>
-                        <td><input type="number" class="Non_EA_Adult" min=0></td>
-                        <td><input type="number" class="Non_EA_Child" min=0></td>
-                        <td><input type="number" class="Non_EA_Infant" min=0></td>
+                        <td class="Non_EA_Adult"></td>
+                        <td class="Non_EA_Child"></td>
+                        <td class="Non_EA_Infant"></td>
                     </tr>
                     <tr>
                         <td><b>TZ residents</b></td>
-                        <td><input type="number" class="TZ_Adult" min=0></td>
-                        <td><input type="number" class="TZ_Child" min=0></td>
-                        <td><input type="number" class="TZ_Infant" min=0></td>
+                        <td class="TZ_Adult"></td>
+                        <td class="TZ_Child"></td>
+                        <td class="TZ_Infant"></td>
                     </tr>
                 </tbody>
             </table>
@@ -290,19 +290,27 @@
             let hotelsCost = document.getElementById('hotel-cost-initial');
             let hotelsCostLabel = document.getElementById('hotelscostLabel');
 
-            if (selectedPark && window.getComputedStyle(ParkSelect).display !== 'none') {
+            if(ParkSelect.style.display == 'none'){
+                hotelsSelect.style.display = 'none';
+                hotelsLabel.style.display = 'none';
+                hotelsCost.style.display = 'none';
+                hotelsCostLabel.style.display = 'none';
+            }
+
+            if (selectedPark) {
                 let xhr = new XMLHttpRequest();
                 xhr.open('POST', 'get_parks.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onload = function() {
                     if (this.status >= 200 && this.status < 400) {
-                        hotelsSelect.innerHTML = this.responseText;
+                        console.table(xhr.responseText)
+                        hotelsSelect.innerHTML = xhr.responseText;
                         hotelsSelect.style.display = 'block';
                         hotelsLabel.style.display = 'block';
                         hotelsCost.style.display = 'block';
                         hotelsCostLabel.style.display = 'block';
                     } else {
-                        hotelsSelect.innerHTML = '<option value="">Error loading parks.</option>';
+                        hotelsSelect.innerHTML = '<option value="">Error loading hotels.</option>';
                         hotelsSelect.style.display = 'block';
                         hotelsLabel.style.display = 'block';
                         hotelsCost.style.display = 'block';
@@ -310,18 +318,13 @@
                     }
                 };
                 xhr.onerror = function() {
-                    hotelsSelect.innerHTML = '<option value="">Error loading parks.</option>';
+                    hotelsSelect.innerHTML = '<option value="">Error loading hotels.</option>';
                     hotelsSelect.style.display = 'block';
                     hotelsLabel.style.display = 'block';
                     hotelsCost.style.display = 'block';
                     hotelsCostLabel.style.display = 'block';
                 };
                 xhr.send('park=' + encodeURIComponent(selectedPark));
-            } else {
-                hotelsSelect.style.display = 'none';
-                hotelsLabel.style.display = 'none';
-                hotelsCost.style.display = 'none';
-                hotelsCostLabel.style.display = 'none';
             }
         });
 
@@ -364,11 +367,11 @@
                         }
 
                         let extra_input = document.getElementById('extra-cost')
-                        extra_input.value = response['extras']
+                        extra_input.textContent = response['extras']
 
                         let total_input = document.querySelectorAll('#total-cost')
                         total_input.forEach((tinput) => {
-                            tinput.value = response['total']
+                            tinput.textContent = response['total']
                         })
                     } else {
                         console.error('Error loading data from compute.php');
