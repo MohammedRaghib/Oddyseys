@@ -12,9 +12,13 @@
             padding: 0;
             background-color: #f4f4f4;
             color: #333;
-            display: flex;
-            flex-direction: column;
+        }
+
+        .grid-wrapper {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             align-items: center;
+            justify-content: center;
         }
 
         h1 {
@@ -31,6 +35,7 @@
             width: 80%;
             max-width: 600px;
             margin-bottom: 20px;
+            margin: 20px;
         }
 
         .Form label {
@@ -42,7 +47,8 @@
         .Form input[type="text"],
         .Form input[type="date"],
         .Form input[type="number"],
-        .Form select {
+        .Form select,
+        .Form textarea {
             width: calc(100% - 22px);
             padding: 10px;
             margin-bottom: 10px;
@@ -100,72 +106,149 @@
         .park_details span {
             margin-bottom: 5px;
         }
+
+        .preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5rem;
+        }
+
+        .preview-people-cost input {
+            width: 85%;
+            margin: 5px;
+            padding: 5px;
+        }
     </style>
 </head>
 
 <body>
     <h1>ODYSSEYS FROM AFRICA</h1>
-    <form action="index.php" class="Form" method="post" onsubmit="stop(event)">
-        <label for="customer_name">Customer Name:</label>
-        <input type="text" class="customer_name" id="customer_name" name="customer_name" required>
+    <main class="grid-wrapper">
+        <form action="index.php" class="Form" method="post">
+            <label for="customer_name">Customer Name:</label>
+            <input type="text" class="customer_name" id="customer_name" name="customer_name" required>
 
-        <label for="start_date">Start Date:</label>
-        <input type="date" class="start_date" id="start_date" name="start_date" required>
+            <label for="start_date">Start Date:</label>
+            <input type="date" class="start_date" id="start_date" name="start_date" required>
 
-        <label for="start_date">End Date</label>
-        <input type="date" class="end_date" id="end_date" name="end_date" required>
+            <label for="start_date">End Date</label>
+            <input type="date" class="end_date" id="end_date" name="end_date" required>
 
-        <label for="country">Country</label>
-        <select name="country" id="country" required>
-            <option value="">Select Country</option>
-            <option value="kenya">Kenya</option>
-            <option value="tanzania">Tanzania</option>
-        </select>
+            <label for="country">Country</label>
+            <select name="country" id="country" required>
+                <option value="">Select Country</option>
+                <option value="kenya">Kenya</option>
+                <option value="tanzania">Tanzania</option>
+            </select>
 
-        <label for="parks" id="parksLabel" style="display: none;">Parks</label>
-        <select name="parks" id="parks" style="display: none;" required></select>
+            <label for="parks" id="parksLabel" style="display: none;">Parks</label>
+            <select name="parks" id="parks" style="display: none;" required></select>
 
-        <label for="visitor_type">Visitor Type</label>
-        <select name="visitor_type" id="visitor_type" required>
-            <option value="">Select Visitor Type</option>
-            <option value="ea_citizen">EA CItizen</option>
-            <option value="non_ea_citizen">Non EA Citizen</option>
-            <option value="tz_resident">TZ Resident</option>
-        </select>
+            <label for="hotels" id="hotelsLabel" style="display: none;">Hotels</label>
+            <select name="hotels" id="hotels" style="display: none;" required></select>
 
-        <label for="people" id="peopleLabel">Number of people</label>
-        <table class="people">
-            <thead>
-                <th>
-                <td>Adult</td>
-                <td>Child (5-15)</td>
-                <td>Child (0-4)</td>
-                </th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>EA citizens</td>
-                    <td><input type="number" name="EA-Adult" class="table-input" min=0></td>
-                    <td><input type="number" name="EA-Child" class="table-input" min=0></td>
-                    <td><input type="number" name="EA-Infant" class="table-input" min=0></td>
-                </tr>
-                <tr>
-                    <td>Non EA citizens</td>
-                    <td><input type="number" name="Non-EA-Adult" class="table-input" min=0></td>
-                    <td><input type="number" name="Non-EA-Child" class="table-input" min=0></td>
-                    <td><input type="number" name="Non-EA-Infant" class="table-input" min=0></td>
-                </tr>
-                <tr>
-                    <td>TZ residents</td>
-                    <td><input type="number" name="TZ-Adult" class="table-input" min=0></td>
-                    <td><input type="number" name="TZ-Child" class="table-input" min=0></td>
-                    <td><input type="number" name="TZ-Infant" class="table-input" min=0></td>
-                </tr>
-            </tbody>
-        </table>
+            <label for="hotel-cost-initial" id="hotelscostLabel" style="display: none;">Hotel Cost</label>
+            <input type="number" id="hotel-cost-initial" style="display: none;">
 
-        <button type="submit">Submit</button>
-    </form>
+            <label for="extra-desc" id="extraLabel">Extra Description</label>
+            <textarea id="extra-desc" placeholder="Separate by commas"></textarea>
+
+            <label for="extra-cost-initial">Extra Cost</label>
+            <input type="number" id="extra-cost-initial">
+
+            <label for="profit">Profit %</label>
+            <input type="number" id="profit">
+
+            <label for="people" id="peopleLabel">Number of people</label>
+            <table class="people">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Adult</th>
+                        <th>Child</th>
+                        <th>Infant</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>EA citizens</td>
+                        <td><input type="number" name="EA-Adult" class="table-input" id="EA-Adult" min=0></td>
+                        <td><input type="number" name="EA-Child" class="table-input" id="EA-Child" min=0></td>
+                        <td><input type="number" name="EA-Infant" class="table-input" id="EA-Infant" min=0></td>
+                    </tr>
+                    <tr>
+                        <td>Non EA citizens</td>
+                        <td><input type="number" name="Non-EA-Adult" class="table-input" id="Non-EA-Adult" min=0></td>
+                        <td><input type="number" name="Non-EA-Child" class="table-input" id="Non-EA-Child" min=0></td>
+                        <td><input type="number" name="Non-EA-Infant" class="table-input" id="Non-EA-Infant" min=0></td>
+                    </tr>
+                    <tr>
+                        <td>TZ residents</td>
+                        <td><input type="number" name="TZ-Adult" class="table-input" id="TZ-Adult" min=0></td>
+                        <td><input type="number" name="TZ-Child" class="table-input" id="TZ-Child" min=0></td>
+                        <td><input type="number" name="TZ-Infant" class="table-input" id="TZ-Infant" min=0></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <label for="invoice-amount">Invoice Amount</label>
+            <input type="number" id="invoice-amount">
+
+            <label for="total-cost">Total Cost</label>
+            <input type="number" id="total-cost">
+
+            <button type="submit">Submit</button>
+        </form>
+        <section class="preview">
+            <table>
+                <thead>
+                    <tr>
+                        <th>COSTS</th>
+                        <th>Adult</th>
+                        <th>Child</th>
+                        <th>Infant</th>
+                    </tr>
+                </thead>
+                <tbody class="preview-people-cost">
+                    <tr>
+                        <td><b>EA citizens</b></td>
+                        <td><input type="number" class="EA_Adult" min=0></td>
+                        <td><input type="number" class="EA_Child" min=0></td>
+                        <td><input type="number" class="EA_Infant" min=0></td>
+                    </tr>
+                    <tr>
+                        <td><b>Non EA citizens</b></td>
+                        <td><input type="number" class="Non_EA_Adult" min=0></td>
+                        <td><input type="number" class="Non_EA_Child" min=0></td>
+                        <td><input type="number" class="Non_EA_Infant" min=0></td>
+                    </tr>
+                    <tr>
+                        <td><b>TZ residents</b></td>
+                        <td><input type="number" class="TZ_Adult" min=0></td>
+                        <td><input type="number" class="TZ_Child" min=0></td>
+                        <td><input type="number" class="TZ_Infant" min=0></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="other-costs">
+                <label for="extra-cost">Extras</label>
+                <input type="number" id="extra-cost">
+                <br>
+                <br>
+                <label for="hotel-cost">Hotel</label>
+                <input type="number" id="hotel-cost">
+                <br>
+                <br>
+                <label for="invoice-amount">Invoice Amount</label>
+                <input type="number" id="invoice-amount">
+                <br>
+                <br>
+                <label for="total-cost">Total Cost</label>
+                <input type="number" id="total-cost">
+            </div>
+        </section>
+    </main>
     <script>
         document.getElementById('country').addEventListener('change', function() {
             let selectedCountry = this.value;
@@ -198,68 +281,108 @@
                 parksLabel.style.display = 'none';
             }
         });
-        const stop = (e) => {
-            e.preventDefault()
 
-        }
+        document.getElementById('parks').addEventListener('change', function() {
+            let selectedPark = this.value;
+            let ParkSelect = document.getElementById(this.id);
+            let hotelsSelect = document.getElementById('hotels');
+            let hotelsLabel = document.getElementById('hotelsLabel');
+            let hotelsCost = document.getElementById('hotel-cost-initial');
+            let hotelsCostLabel = document.getElementById('hotelscostLabel');
+
+            if (selectedPark && window.getComputedStyle(ParkSelect).display !== 'none') {
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', 'get_parks.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (this.status >= 200 && this.status < 400) {
+                        hotelsSelect.innerHTML = this.responseText;
+                        hotelsSelect.style.display = 'block';
+                        hotelsLabel.style.display = 'block';
+                        hotelsCost.style.display = 'block';
+                        hotelsCostLabel.style.display = 'block';
+                    } else {
+                        hotelsSelect.innerHTML = '<option value="">Error loading parks.</option>';
+                        hotelsSelect.style.display = 'block';
+                        hotelsLabel.style.display = 'block';
+                        hotelsCost.style.display = 'block';
+                        hotelsCostLabel.style.display = 'block';
+                    }
+                };
+                xhr.onerror = function() {
+                    hotelsSelect.innerHTML = '<option value="">Error loading parks.</option>';
+                    hotelsSelect.style.display = 'block';
+                    hotelsLabel.style.display = 'block';
+                    hotelsCost.style.display = 'block';
+                    hotelsCostLabel.style.display = 'block';
+                };
+                xhr.send('park=' + encodeURIComponent(selectedPark));
+            } else {
+                hotelsSelect.style.display = 'none';
+                hotelsLabel.style.display = 'none';
+                hotelsCost.style.display = 'none';
+                hotelsCostLabel.style.display = 'none';
+            }
+        });
+
+        document.querySelectorAll('.table-input').forEach(input => {
+            input.addEventListener('change', () => {
+                let people = {
+                    EA_Adult: document.getElementById('EA-Adult').value || 0,
+                    EA_Child: document.getElementById('EA-Child').value || 0,
+                    EA_Infant: document.getElementById('EA-Infant').value || 0,
+                    Non_EA_Adult: document.getElementById('Non-EA-Adult').value || 0,
+                    Non_EA_Child: document.getElementById('Non-EA-Child').value || 0,
+                    Non_EA_Infant: document.getElementById('Non-EA-Infant').value || 0,
+                    TZ_Adult: document.getElementById('TZ-Adult').value || 0,
+                    TZ_Child: document.getElementById('TZ-Child').value || 0,
+                    TZ_Infant: document.getElementById('TZ-Infant').value || 0,
+                };
+
+                let all_data = {
+                    hotel: document.getElementById('hotel-cost-initial').value || 0,
+                    people: people,
+                    extras: document.getElementById('extra-cost-initial').value || 0,
+                    date_range: {
+                        start_date: document.getElementById('start_date').value,
+                        end_date: document.getElementById('end_date').value,
+                    },
+                    profit: document.getElementById('profit').value || 0,
+                }
+
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', 'compute.php', true);
+                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        let response = JSON.parse(xhr.responseText);
+                        let people_response = response['people']
+
+                        for (let [key, val] of Object.entries(people_response)) {
+                            let input = document.querySelector(`.${key}`);
+                            input.value = val;
+                        }
+
+                        let extra_input = document.getElementById('extra-cost')
+                        extra_input.value = response['extras']
+
+                        let total_input = document.querySelectorAll('#total-cost')
+                        total_input.forEach((tinput) => {
+                            tinput.value = response['total']
+                        })
+                    } else {
+                        console.error('Error loading data from compute.php');
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('AJAX request failed.');
+                };
+
+                xhr.send('data=' + encodeURIComponent(JSON.stringify(all_data)));
+            });
+        });
     </script>
-
-    <?php
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $customerName = $_POST['customer_name'];
-        $startDate = $_POST['start_date'];
-        $endDate = $_POST['end_date'];
-        $selectedPark = $_POST['parks'];
-
-        $EA_Adult = !empty($_POST['EA-Adult']) ? $_POST['EA-Adult'] : 0;
-        $EA_Child = !empty($_POST['EA-Child']) ? $_POST['EA-Child'] : 0;
-        $Non_EA_Adult = !empty($_POST['Non-EA-Adult']) ? $_POST['Non-EA-Adult'] : 0;
-        $Non_EA_Child = !empty($_POST['Non-EA-Child']) ? $_POST['Non-EA-Child'] : 0;
-        $TZ_Adult = !empty($_POST['TZ-Adult']) ? $_POST['TZ-Adult'] : 0;
-        $TZ_Child = !empty($_POST['TZ-Child']) ? $_POST['TZ-Child'] : 0;
-
-        $dbFilePath = './oddyseys.db';
-
-        try {
-            $pdo = new PDO("sqlite:" . $dbFilePath);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            $check_query = "SELECT COUNT(*) FROM park_conservation_fees WHERE park_name = :parkName 
-                        AND ((start_date BETWEEN :startDate AND :endDate) OR 
-                             (end_date BETWEEN :startDate AND :endDate) OR 
-                             (:startDate BETWEEN start_date AND end_date) OR 
-                             (:endDate BETWEEN start_date AND end_date))";
-            $stmt = $pdo->prepare($check_query);
-            $stmt->execute([':parkName' => $selectedPark, ':startDate' => $startDate, ':endDate' => $endDate]);
-            $clashCount = $stmt->fetchColumn();
-
-            if ($clashCount > 0) {
-                echo "<p class='error'>Error: Date range conflicts with an existing booking.</p>";
-                exit();
-            }
-
-            // Fetch pricing for the given date range
-            $get_price_query = "SELECT * FROM park_fees WHERE park_name = :parkName 
-                            AND date >= :startDate AND date <= :endDate";
-            $price_stmt = $pdo->prepare($get_price_query);
-            $price_stmt->execute([':parkName' => $selectedPark, ':startDate' => $startDate, ':endDate' => $endDate]);
-
-            $totalFees = 0;
-            while ($price_row = $price_stmt->fetch(PDO::FETCH_ASSOC)) {
-                $totalFees += ($price_row['adult_ea_citizen_fee'] * $EA_Adult) +
-                    ($price_row['child_ea_citizen_fee'] * $EA_Child) +
-                    ($price_row['adult_non_ea_citizen_fee'] * $Non_EA_Adult) +
-                    ($price_row['child_non_ea_citizen_fee'] * $Non_EA_Child) +
-                    ($price_row['adult_tz_resident_fee'] * $TZ_Adult) +
-                    ($price_row['child_tz_resident_fee'] * $TZ_Child);
-            }
-
-            echo "<p>Total Fees: $$totalFees</p>";
-        } catch (PDOException $e) {
-            echo "<p class='error'>Error: " . htmlspecialchars($e->getMessage()) . "</p>";
-        }
-    }
-    ?>
 </body>
 
 </html>
