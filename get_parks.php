@@ -13,7 +13,7 @@ try {
         $park_stmt = $pdo->prepare($get_parks_query);
         $park_stmt->execute([':country' => $selectedCountry]);
 
-        $options = '';
+        $options .= '<option value="">' . htmlspecialchars("-SELECT PARK-") . '</option>';
         $parks = [];
         while ($park_row = $park_stmt->fetch(PDO::FETCH_ASSOC)) {
             if (!in_array($park_row['name'], $parks)) {
@@ -32,7 +32,7 @@ try {
         $hotel_stmt->execute([':park' => $selectedPark]);
 
         $options = '';
-        $options .= '<option value="' . htmlspecialchars("-SELECT HOTEL-") . '">' . htmlspecialchars("-SELECT HOTEL-") . '</option>';
+        $options .= '<option value="">' . htmlspecialchars("-SELECT HOTEL-") . '</option>';
         $hotels = [];
 
         while ($row = $hotel_stmt->fetch(PDO::FETCH_ASSOC)) {

@@ -35,7 +35,7 @@
             width: 80%;
             max-width: 600px;
             margin-bottom: 20px;
-            margin: 20px;
+            margin: 20px auto;
         }
 
         .Form label {
@@ -88,6 +88,7 @@
             width: 80%;
             max-width: 600px;
             margin-bottom: 20px;
+            margin: 20px auto;
         }
 
         .customer_info h2,
@@ -119,6 +120,88 @@
             margin: 5px;
             padding: 5px;
         }
+
+        .container {
+            width: 90%;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 20px;
+        }
+
+        .section-title {
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .item-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .item-row span {
+            border-bottom: 1px dotted #ccc;
+            flex-grow: 1;
+            margin-left: 10px;
+            padding-bottom: 2px;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .total-row span {
+            border-bottom: 1px solid #ccc;
+            flex-grow: 1;
+            margin-left: 10px;
+            padding-bottom: 2px;
+        }
+
+        .total-row span.no-line {
+            margin-left: 0;
+            border-bottom: none;
+        }
+
+        table.people {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        table.people thead th {
+            background-color: #f0f0f0;
+            padding: 8px;
+            text-align: left;
+            border-bottom: 2px solid #ddd;
+        }
+
+        table.people tbody td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+        }
+
+        table.people tbody td input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+        }
+
+        table.people tbody td input:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 
@@ -132,7 +215,7 @@
             <label for="start_date">Start Date:</label>
             <input type="date" class="start_date" id="start_date" name="start_date" required>
 
-            <label for="start_date">End Date</label>
+            <label for="end_date">End Date</label>
             <input type="date" class="end_date" id="end_date" name="end_date" required>
 
             <label for="country">Country</label>
@@ -148,17 +231,20 @@
             <label for="hotels" id="hotelsLabel" style="display: none;">Hotels</label>
             <select name="hotels" id="hotels" style="display: none;" required></select>
 
-            <label for="hotel-cost-initial" id="hotelscostLabel" style="display: none;">Hotel Cost</label>
-            <input type="number" id="hotel-cost-initial" style="display: none;">
+            <label for="hotel-cost-initial" id="hotelscostLabel" style="display: none;">Hotel Cost Per Day</label>
+            <input type="number" id="hotel-cost-initial" style="display: none;" name="hotel_cost_initial">
 
             <label for="extra-desc" id="extraLabel">Extra Description</label>
-            <textarea id="extra-desc" placeholder="Separate by commas"></textarea>
+            <textarea id="extra-desc" name="extra_desc" placeholder="Separate by commas"></textarea>
 
             <label for="extra-cost-initial">Extra Cost</label>
-            <input type="number" id="extra-cost-initial">
+            <input type="number" id="extra-cost-initial" name="extra_cost_initial">
 
-            <label for="profit">Profit %</label>
-            <input type="number" id="profit">
+            <label for="flight-cost-initial">Flight</label>
+            <input type="number" id="flight-cost-initial" name="flight_cost_initial">
+
+            <label for="car_hire-cost-initial">Car Hire Cost Per Day</label>
+            <input type="number" id="car_hire-cost-initial" name="car_hire_cost_initial">
 
             <label for="people" id="peopleLabel">Number of people</label>
             <table class="people">
@@ -173,79 +259,94 @@
                 <tbody>
                     <tr>
                         <td>EA citizens</td>
-                        <td><input type="number" name="EA-Adult" class="table-input" id="EA-Adult" min=0></td>
-                        <td><input type="number" name="EA-Child" class="table-input" id="EA-Child" min=0></td>
-                        <td><input type="number" name="EA-Infant" class="table-input" id="EA-Infant" min=0></td>
+                        <td><input type="number" name="EA-Adult" class="table-input" id="EA-Adult" min=0 value="0"></td>
+                        <td><input type="number" name="EA-Child" class="table-input" id="EA-Child" min=0 value="0"></td>
+                        <td><input type="number" name="EA-Infant" class="table-input" id="EA-Infant" min=0 value="0"></td>
                     </tr>
                     <tr>
                         <td>Non EA citizens</td>
-                        <td><input type="number" name="Non-EA-Adult" class="table-input" id="Non-EA-Adult" min=0></td>
-                        <td><input type="number" name="Non-EA-Child" class="table-input" id="Non-EA-Child" min=0></td>
-                        <td><input type="number" name="Non-EA-Infant" class="table-input" id="Non-EA-Infant" min=0></td>
+                        <td><input type="number" name="Non-EA-Adult" class="table-input" id="Non-EA-Adult" min=0 value="0"></td>
+                        <td><input type="number" name="Non-EA-Child" class="table-input" id="Non-EA-Child" min=0 value="0"></td>
+                        <td><input type="number" name="Non-EA-Infant" class="table-input" id="Non-EA-Infant" min=0 value="0"></td>
                     </tr>
                     <tr>
                         <td>TZ residents</td>
-                        <td><input type="number" name="TZ-Adult" class="table-input" id="TZ-Adult" min=0></td>
-                        <td><input type="number" name="TZ-Child" class="table-input" id="TZ-Child" min=0></td>
-                        <td><input type="number" name="TZ-Infant" class="table-input" id="TZ-Infant" min=0></td>
+                        <td><input type="number" name="TZ-Adult" class="table-input" id="TZ-Adult" min=0 value="0"></td>
+                        <td><input type="number" name="TZ-Child" class="table-input" id="TZ-Child" min=0 value="0"></td>
+                        <td><input type="number" name="TZ-Infant" class="table-input" id="TZ-Infant" min=0 value="0"></td>
                     </tr>
                 </tbody>
             </table>
 
-            <label for="invoice-amount">Invoice Amount</label>
-            <input type="number" id="invoice-amount">
-
             <label for="total-cost">Total Cost</label>
-            <input type="number" id="total-cost">
+            <input type="number" id="total-cost" name="total_cost">
+
+            <label for="profit">Profit %</label>
+            <input type="number" id="profit" name="profit">
+
+            <label for="invoice-amount">Invoice Amount</label>
+            <input type="number" id="invoice-amount" name="invoice_amount">
 
             <button type="submit">Submit</button>
         </form>
         <section class="preview">
-            <table>
-                <thead>
-                    <tr>
-                        <th>COSTS</th>
-                        <th>Adult</th>
-                        <th>Child</th>
-                        <th>Infant</th>
-                    </tr>
-                </thead>
-                <tbody class="preview-people-cost">
-                    <tr>
-                        <td><b>EA citizens</b></td>
-                        <td class="EA_Adult"></td>
-                        <td class="EA_Child"></td>
-                        <td class="EA_Infant"></td>
-                    </tr>
-                    <tr>
-                        <td><b>Non EA citizens</b></td>
-                        <td class="Non_EA_Adult"></td>
-                        <td class="Non_EA_Child"></td>
-                        <td class="Non_EA_Infant"></td>
-                    </tr>
-                    <tr>
-                        <td><b>TZ residents</b></td>
-                        <td class="TZ_Adult"></td>
-                        <td class="TZ_Child"></td>
-                        <td class="TZ_Infant"></td>
-                    </tr>
-                </tbody>
-            </table>
-            <div class="other-costs">
-                <label for="extra-cost">Extras</label>
-                <input type="number" id="extra-cost">
-                <br>
-                <br>
-                <label for="hotel-cost">Hotel</label>
-                <input type="number" id="hotel-cost">
-                <br>
-                <br>
-                <label for="invoice-amount">Invoice Amount</label>
-                <input type="number" id="invoice-amount">
-                <br>
-                <br>
-                <label for="total-cost">Total Cost</label>
-                <input type="number" id="total-cost">
+            <div class="container">
+                <h2 class="section-title">Conservation Fees</h2>
+
+                <div class="item-row conservation-adult conservation-section">
+                    <div><span class="conservation-adult-count">0</span> Adults @ Ksh <span class="conservation-adult-cost">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="conservation-adult-total">0</span></div>
+                </div>
+                <div class="item-row conservation-child conservation-section">
+                    <div><span class="conservation-child-count">0</span> Children @ Ksh <span class="conservation-child-cost">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="conservation-child-total">0</span></div>
+                </div>
+                <div class="item-row conservation-infant conservation-section">
+                    <div><span class="conservation-infant-count">0</span> Infants @ Ksh <span class="conservation-infant-cost">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="conservation-infant-total">0</span></div>
+                </div>
+
+                <h2 class="section-title">Concession Fees</h2>
+
+                <div class="item-row concession-adult concession-section">
+                    <div><span class="concession-adult-count">0</span> Adults @ Ksh <span class="concession-adult-cost">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="concession-adult-total">0</span></div>
+                </div>
+                <div class="item-row concession-child concession-section">
+                    <div><span class="concession-child-count">0</span> Children @ Ksh <span class="concession-child-cost">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="concession-child-total">0</span></div>
+                </div>
+                <div class="item-row concession-infant concession-section">
+                    <div><span class="concession-infant-count">0</span> Infants @ Ksh <span class="concession-infant-cost">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="concession-infant-total">0</span></div>
+                </div>
+
+                <div class="total-row hotel hotel-section">
+                    <div><span class="hotel-count no-line">0</span> DAYS HOTEL @ KSH <span class="hotel-cost no-line">0</span></div>
+                    <span></span>
+                    <div>= Ksh <span class="hotel-total">0</span></div>
+                </div>
+                <div class="total-row car_hire car_hire-section">
+                    <div>CAR HIRE</div>
+                    <span></span>
+                    <div>= Ksh <span class="car_hire-total">0</span></div>
+                </div>
+                <div class="total-row flight flight-section">
+                    <div>FLIGHT</div>
+                    <span></span>
+                    <div>= Ksh <span class="flight-total">0</span></div>
+                </div>
+                <div class="total-row total-section">
+                    <div>TOTAL</div>
+                    <span></span>
+                    <div>= Ksh <span class="total">0</span></div>
+                </div>
             </div>
         </section>
     </main>
@@ -254,6 +355,10 @@
             let selectedCountry = this.value;
             let parksSelect = document.getElementById('parks');
             let parksLabel = document.getElementById('parksLabel');
+            let hotelsSelect = document.getElementById('hotels');
+            let hotelsLabel = document.getElementById('hotelsLabel');
+            let hotelsCostLabel = document.getElementById('hotelscostLabel');
+            let hotelsCostInput = document.getElementById('hotel-cost-initial');
 
             if (selectedCountry) {
                 let xhr = new XMLHttpRequest();
@@ -264,38 +369,46 @@
                         parksSelect.innerHTML = this.responseText;
                         parksSelect.style.display = 'block';
                         parksLabel.style.display = 'block';
+                        hotelsSelect.style.display = 'none';
+                        hotelsLabel.style.display = 'none';
+                        hotelsCostInput.style.display = 'none';
+                        hotelsCostLabel.style.display = 'none';
                     } else {
                         parksSelect.innerHTML = '<option value="">Error loading parks.</option>';
                         parksSelect.style.display = 'block';
                         parksLabel.style.display = 'block';
+                        hotelsSelect.style.display = 'none';
+                        hotelsLabel.style.display = 'none';
+                        hotelsCostInput.style.display = 'none';
+                        hotelsCostLabel.style.display = 'none';
                     }
                 };
                 xhr.onerror = function() {
                     parksSelect.innerHTML = '<option value="">Error loading parks.</option>';
                     parksSelect.style.display = 'block';
                     parksLabel.style.display = 'block';
+                    hotelsSelect.style.display = 'none';
+                    hotelsLabel.style.display = 'none';
+                    hotelsCostInput.style.display = 'none';
+                    hotelsCostLabel.style.display = 'none';
                 };
                 xhr.send('country=' + encodeURIComponent(selectedCountry));
             } else {
                 parksSelect.style.display = 'none';
                 parksLabel.style.display = 'none';
+                hotelsSelect.style.display = 'none';
+                hotelsLabel.style.display = 'none';
+                hotelsCostInput.style.display = 'none';
+                hotelsCostLabel.style.display = 'none';
             }
         });
 
         document.getElementById('parks').addEventListener('change', function() {
             let selectedPark = this.value;
-            let ParkSelect = document.getElementById(this.id);
             let hotelsSelect = document.getElementById('hotels');
             let hotelsLabel = document.getElementById('hotelsLabel');
             let hotelsCost = document.getElementById('hotel-cost-initial');
             let hotelsCostLabel = document.getElementById('hotelscostLabel');
-
-            if(ParkSelect.style.display == 'none'){
-                hotelsSelect.style.display = 'none';
-                hotelsLabel.style.display = 'none';
-                hotelsCost.style.display = 'none';
-                hotelsCostLabel.style.display = 'none';
-            }
 
             if (selectedPark) {
                 let xhr = new XMLHttpRequest();
@@ -303,7 +416,6 @@
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
                 xhr.onload = function() {
                     if (this.status >= 200 && this.status < 400) {
-                        console.table(xhr.responseText)
                         hotelsSelect.innerHTML = xhr.responseText;
                         hotelsSelect.style.display = 'block';
                         hotelsLabel.style.display = 'block';
@@ -325,66 +437,138 @@
                     hotelsCostLabel.style.display = 'block';
                 };
                 xhr.send('park=' + encodeURIComponent(selectedPark));
+            } else {
+                hotelsSelect.style.display = 'none';
+                hotelsLabel.style.display = 'none';
+                hotelsCost.style.display = 'none';
+                hotelsCostLabel.style.display = 'none';
             }
         });
 
         document.querySelectorAll('.table-input').forEach(input => {
-            input.addEventListener('change', () => {
-                let people = {
-                    EA_Adult: document.getElementById('EA-Adult').value || 0,
-                    EA_Child: document.getElementById('EA-Child').value || 0,
-                    EA_Infant: document.getElementById('EA-Infant').value || 0,
-                    Non_EA_Adult: document.getElementById('Non-EA-Adult').value || 0,
-                    Non_EA_Child: document.getElementById('Non-EA-Child').value || 0,
-                    Non_EA_Infant: document.getElementById('Non-EA-Infant').value || 0,
-                    TZ_Adult: document.getElementById('TZ-Adult').value || 0,
-                    TZ_Child: document.getElementById('TZ-Child').value || 0,
-                    TZ_Infant: document.getElementById('TZ-Infant').value || 0,
-                };
-
-                let all_data = {
-                    hotel: document.getElementById('hotel-cost-initial').value || 0,
-                    people: people,
-                    extras: document.getElementById('extra-cost-initial').value || 0,
-                    date_range: {
-                        start_date: document.getElementById('start_date').value,
-                        end_date: document.getElementById('end_date').value,
-                    },
-                    profit: document.getElementById('profit').value || 0,
-                }
-
-                let xhr = new XMLHttpRequest();
-                xhr.open('POST', 'compute.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                xhr.onload = function() {
-                    if (xhr.status >= 200 && xhr.status < 400) {
-                        let response = JSON.parse(xhr.responseText);
-                        let people_response = response['people']
-
-                        for (let [key, val] of Object.entries(people_response)) {
-                            let input = document.querySelector(`.${key}`);
-                            input.value = val;
-                        }
-
-                        let extra_input = document.getElementById('extra-cost')
-                        extra_input.textContent = response['extras']
-
-                        let total_input = document.querySelectorAll('#total-cost')
-                        total_input.forEach((tinput) => {
-                            tinput.textContent = response['total']
-                        })
-                    } else {
-                        console.error('Error loading data from compute.php');
-                    }
-                };
-
-                xhr.onerror = function() {
-                    console.error('AJAX request failed.');
-                };
-
-                xhr.send('data=' + encodeURIComponent(JSON.stringify(all_data)));
-            });
+            input.addEventListener('change', compute)
         });
+        document.getElementById('start_date').addEventListener('change', compute);
+        document.getElementById('end_date').addEventListener('change', compute);
+        document.getElementById('hotel-cost-initial').addEventListener('change', compute);
+        document.getElementById('extra-cost-initial').addEventListener('change', compute);
+        document.getElementById('flight-cost-initial').addEventListener('change', compute);
+        document.getElementById('car_hire-cost-initial').addEventListener('change', compute);
+        document.getElementById('profit').addEventListener('change', compute);
+
+
+        function compute() {
+            let people = {
+                EA_Adult: parseInt(document.getElementById('EA-Adult').value) || 0,
+                EA_Child: parseInt(document.getElementById('EA-Child').value) || 0,
+                EA_Infant: parseInt(document.getElementById('EA-Infant').value) || 0,
+                Non_EA_Adult: parseInt(document.getElementById('Non-EA-Adult').value) || 0,
+                Non_EA_Child: parseInt(document.getElementById('Non-EA-Child').value) || 0,
+                Non_EA_Infant: parseInt(document.getElementById('Non-EA-Infant').value) || 0,
+                TZ_Adult: parseInt(document.getElementById('TZ-Adult').value) || 0,
+                TZ_Child: parseInt(document.getElementById('TZ-Child').value) || 0,
+                TZ_Infant: parseInt(document.getElementById('TZ-Infant').value) || 0,
+            };
+
+            let all_data = {
+                hotel_cost_per_day: parseFloat(document.getElementById('hotel-cost-initial').value) || 0,
+                car_hire_cost_per_day: parseFloat(document.getElementById('car_hire-cost-initial').value) || 0,
+                flight: parseFloat(document.getElementById('flight-cost-initial').value) || 0,
+                people: people,
+                extras: parseFloat(document.getElementById('extra-cost-initial').value) || 0,
+                date_range: {
+                    start_date: document.getElementById('start_date').value,
+                    end_date: document.getElementById('end_date').value,
+                },
+                profit: parseFloat(document.getElementById('profit').value) || 0,
+            };
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', 'compute.php', true);
+            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    let response = JSON.parse(xhr.responseText);
+                    updatePreview(response);
+                } else {
+                    console.error('Error:', xhr.status, xhr.statusText);
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error('Computing request failed.');
+            };
+
+            xhr.send('data=' + encodeURIComponent(JSON.stringify(all_data)));
+        };
+
+        function updatePreview(data) {
+            // Update Conservation Fees
+            document.querySelector('.conservation-adult-count').textContent = data.conservation.adult.count;
+            document.querySelector('.conservation-adult-cost').textContent = data.conservation.adult.per;
+            document.querySelector('.conservation-adult-total').textContent = data.conservation.adult.total;
+            toggleVisibility('.conservation-adult', data.conservation.adult.total);
+
+            document.querySelector('.conservation-child-count').textContent = data.conservation.child.count;
+            document.querySelector('.conservation-child-cost').textContent = data.conservation.child.per;
+            document.querySelector('.conservation-child-total').textContent = data.conservation.child.total;
+            toggleVisibility('.conservation-child', data.conservation.child.total);
+
+            document.querySelector('.conservation-infant-count').textContent = data.conservation.infant.count;
+            document.querySelector('.conservation-infant-cost').textContent = data.conservation.infant.per;
+            document.querySelector('.conservation-infant-total').textContent = data.conservation.infant.total;
+            toggleVisibility('.conservation-infant', data.conservation.infant.total);
+
+            // Update Concession Fees
+            document.querySelector('.concession-adult-count').textContent = data.consession.adult.count;
+            document.querySelector('.concession-adult-cost').textContent = data.consession.adult.per;
+            document.querySelector('.concession-adult-total').textContent = data.consession.adult.total;
+            toggleVisibility('.concession-adult', data.consession.adult.total);
+
+            document.querySelector('.concession-child-count').textContent = data.consession.child.count;
+            document.querySelector('.concession-child-cost').textContent = data.consession.child.per;
+            document.querySelector('.concession-child-total').textContent = data.consession.child.total;
+            toggleVisibility('.concession-child', data.consession.child.total);
+
+            document.querySelector('.concession-infant-count').textContent = data.consession.infant.count;
+            document.querySelector('.concession-infant-cost').textContent = data.consession.infant.per;
+            document.querySelector('.concession-infant-total').textContent = data.consession.infant.total;
+            toggleVisibility('.concession-infant', data.consession.infant.total);
+
+            //hotel
+            document.querySelector('.hotel-count').textContent = data.hotel.count;
+            document.querySelector('.hotel-cost').textContent = data.hotel.per;
+            document.querySelector('.hotel-total').textContent = data.hotel.total;
+            toggleVisibility('.hotel', data.hotel.total);
+
+            // Update Other Costs
+            document.querySelector('.car_hire-total').textContent = data.car_hire;
+            toggleVisibility('.car_hire', data.car_hire);
+            document.querySelector('.flight-total').textContent = data.flight;
+            toggleVisibility('.flight', data.flight);
+
+            let total = document.querySelector('.total');
+            let profit = document.getElementById('profit').value || 0;
+            let invoice = document.getElementById('invoice-amount').value || 0;
+            let data_total = parseFloat(data.total)
+
+            total.textContent = data.total;
+
+            let calculated = data_total + (data_total * (profit / 100));
+            invoice = calculated.toFixed(1);
+
+            document.getElementById('invoice-amount').value = invoice;
+            document.getElementById('total-cost').value = data.total;
+        }
+
+        function toggleVisibility(selector, value) {
+            let element = document.querySelector(selector);
+            if (value === 0) {
+                element.classList.add('hidden');
+            } else {
+                element.classList.remove('hidden');
+            }
+        }
     </script>
 </body>
 
