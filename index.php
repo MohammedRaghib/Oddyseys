@@ -294,58 +294,58 @@
                 <h2 class="section-title">Conservation Fees</h2>
 
                 <div class="item-row conservation-adult conservation-section">
-                    <div><span class="conservation-adult-count">0</span> Adults @ Ksh <span class="conservation-adult-cost">0</span></div>
+                    <div><span class="conservation-adult-count">0</span> Adults @ USD <span class="conservation-adult-cost">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="conservation-adult-total">0</span></div>
+                    <div>= USD <span class="conservation-adult-total">0</span></div>
                 </div>
                 <div class="item-row conservation-child conservation-section">
-                    <div><span class="conservation-child-count">0</span> Children @ Ksh <span class="conservation-child-cost">0</span></div>
+                    <div><span class="conservation-child-count">0</span> Children @ USD <span class="conservation-child-cost">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="conservation-child-total">0</span></div>
+                    <div>= USD <span class="conservation-child-total">0</span></div>
                 </div>
                 <div class="item-row conservation-infant conservation-section">
-                    <div><span class="conservation-infant-count">0</span> Infants @ Ksh <span class="conservation-infant-cost">0</span></div>
+                    <div><span class="conservation-infant-count">0</span> Infants @ USD <span class="conservation-infant-cost">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="conservation-infant-total">0</span></div>
+                    <div>= USD <span class="conservation-infant-total">0</span></div>
                 </div>
 
                 <h2 class="section-title">Concession Fees</h2>
 
                 <div class="item-row concession-adult concession-section">
-                    <div><span class="concession-adult-count">0</span> Adults @ Ksh <span class="concession-adult-cost">0</span></div>
+                    <div><span class="concession-adult-count">0</span> Adults @ USD <span class="concession-adult-cost">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="concession-adult-total">0</span></div>
+                    <div>= USD <span class="concession-adult-total">0</span></div>
                 </div>
                 <div class="item-row concession-child concession-section">
-                    <div><span class="concession-child-count">0</span> Children @ Ksh <span class="concession-child-cost">0</span></div>
+                    <div><span class="concession-child-count">0</span> Children @ USD <span class="concession-child-cost">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="concession-child-total">0</span></div>
+                    <div>= USD <span class="concession-child-total">0</span></div>
                 </div>
                 <div class="item-row concession-infant concession-section">
-                    <div><span class="concession-infant-count">0</span> Infants @ Ksh <span class="concession-infant-cost">0</span></div>
+                    <div><span class="concession-infant-count">0</span> Infants @ USD <span class="concession-infant-cost">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="concession-infant-total">0</span></div>
+                    <div>= USD <span class="concession-infant-total">0</span></div>
                 </div>
 
                 <div class="total-row hotel hotel-section">
-                    <div><span class="hotel-count no-line">0</span> DAYS HOTEL @ KSH <span class="hotel-cost no-line">0</span></div>
+                    <div><span class="hotel-count no-line">0</span> DAYS HOTEL @ USD <span class="hotel-cost no-line">0</span></div>
                     <span></span>
-                    <div>= Ksh <span class="hotel-total">0</span></div>
+                    <div>= USD <span class="hotel-total">0</span></div>
                 </div>
                 <div class="total-row car_hire car_hire-section">
                     <div>CAR HIRE</div>
                     <span></span>
-                    <div>= Ksh <span class="car_hire-total">0</span></div>
+                    <div>= USD <span class="car_hire-total">0</span></div>
                 </div>
                 <div class="total-row flight flight-section">
                     <div>FLIGHT</div>
                     <span></span>
-                    <div>= Ksh <span class="flight-total">0</span></div>
+                    <div>= USD <span class="flight-total">0</span></div>
                 </div>
                 <div class="total-row total-section">
                     <div>TOTAL</div>
                     <span></span>
-                    <div>= Ksh <span class="total">0</span></div>
+                    <div>= USD <span class="total">0</span></div>
                 </div>
             </div>
         </section>
