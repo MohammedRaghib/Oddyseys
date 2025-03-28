@@ -208,7 +208,7 @@
 <body>
     <h1>ODYSSEYS FROM AFRICA</h1>
     <main class="grid-wrapper">
-        <form action="index.php" class="Form" method="post">
+        <form action="index.php" class="Form" onsubmit="generate_invoice(event)">
             <label for="customer_name">Customer Name:</label>
             <input type="text" class="customer_name" id="customer_name" name="customer_name" required>
 
@@ -229,7 +229,7 @@
             <select name="parks" id="parks" style="display: none;" required></select>
 
             <label for="hotels" id="hotelsLabel" style="display: none;">Hotels</label>
-            <select name="hotels" id="hotels" style="display: none;" required></select>
+            <select name="hotels" id="hotels" style="display: none;"></select>
 
             <label for="hotel-cost-initial" id="hotelscostLabel" style="display: none;">Hotel Cost Per Day</label>
             <input type="number" id="hotel-cost-initial" style="display: none;" name="hotel_cost_initial">
@@ -238,16 +238,16 @@
             <textarea id="extra-desc" name="extra_desc" placeholder="Separate by commas"></textarea>
 
             <label for="extra-cost-initial">Extra Cost</label>
-            <input type="number" id="extra-cost-initial" name="extra_cost_initial">
+            <input type="number" id="extra-cost-initial" step="0.01" name="extra_cost_initial">
 
             <label for="flight-cost-initial">Flight</label>
-            <input type="number" id="flight-cost-initial" name="flight_cost_initial">
+            <input type="number" id="flight-cost-initial" step="0.01" name="flight_cost_initial">
 
             <label for="car_hire-cost-initial">Car Hire Cost Per Day</label>
-            <input type="number" id="car_hire-cost-initial" name="car_hire_cost_initial">
+            <input type="number" id="car_hire-cost-initial" step="0.01" name="car_hire_cost_initial">
 
             <label for="people" id="peopleLabel">Number of people</label>
-            <table class="people">
+            <table class="people" id="people">
                 <thead>
                     <tr>
                         <th></th>
@@ -279,13 +279,16 @@
             </table>
 
             <label for="total-cost">Total Cost</label>
-            <input type="number" id="total-cost" name="total_cost">
+            <input type="number" id="total-cost" step="0.01" name="total_cost">
 
             <label for="profit">Profit %</label>
-            <input type="number" id="profit" name="profit">
+            <input type="number" id="profit" step="0.01" name="profit">
+
+            <label for="discount">Discount %</label>
+            <input type="number" id="discount" step="0.01" name="discount">
 
             <label for="invoice-amount">Invoice Amount</label>
-            <input type="number" id="invoice-amount" name="invoice_amount">
+            <input type="number" id="invoice-amount" step="0.01" name="invoice_amount">
 
             <button type="submit">Submit</button>
         </form>
@@ -341,6 +344,11 @@
                     <div>FLIGHT</div>
                     <span></span>
                     <div>= USD <span class="flight-total">0</span></div>
+                </div>
+                <div class="total-row extras extras-section">
+                    <div>EXTRAS</div>
+                    <span></span>
+                    <div>= USD <span class="extras-total">0</span></div>
                 </div>
                 <div class="total-row total-section">
                     <div>TOTAL</div>
@@ -455,6 +463,7 @@
         document.getElementById('flight-cost-initial').addEventListener('change', compute);
         document.getElementById('car_hire-cost-initial').addEventListener('change', compute);
         document.getElementById('profit').addEventListener('change', compute);
+        document.getElementById('discount').addEventListener('change', compute);
 
 
         function compute() {
@@ -471,6 +480,7 @@
             };
 
             let all_data = {
+                park_name: document.getElementById('parks').value,
                 hotel_cost_per_day: parseFloat(document.getElementById('hotel-cost-initial').value) || 0,
                 car_hire_cost_per_day: parseFloat(document.getElementById('car_hire-cost-initial').value) || 0,
                 flight: parseFloat(document.getElementById('flight-cost-initial').value) || 0,
@@ -546,15 +556,19 @@
             toggleVisibility('.car_hire', data.car_hire);
             document.querySelector('.flight-total').textContent = data.flight;
             toggleVisibility('.flight', data.flight);
+            document.querySelector('.extras-total').textContent = data.extras;
+            toggleVisibility('.extras', data.extras);
 
             let total = document.querySelector('.total');
             let profit = document.getElementById('profit').value || 0;
+            let discount = document.getElementById('discount').value || 0;
             let invoice = document.getElementById('invoice-amount').value || 0;
-            let data_total = parseFloat(data.total)
+            let data_total = parseFloat(data.total);
 
             total.textContent = data.total;
 
             let calculated = data_total + (data_total * (profit / 100));
+            calculated = calculated - (calculated * (discount / 100)); 
             invoice = calculated.toFixed(1);
 
             document.getElementById('invoice-amount').value = invoice;
@@ -568,6 +582,46 @@
             } else {
                 element.classList.remove('hidden');
             }
+        }
+        const generate_invoice = (e) => {
+            e.preventDefault();
+            let StartDate = document.getElementById('start_date').value;
+            let EndDate = document.getElementById('end_date').value;
+
+            let date1 = new Date(StartDate);
+            let date2 = new Date(EndDate);
+            let currentDate = new Date();
+
+            let Difference_In_Time = date2.getTime() - date1.getTime();
+
+            let Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+            let invoice_amount = document.getElementById('invoice-amount').value || 0;
+
+            let invoice = {
+                CustomerName: document.getElementById('customer_name').value,
+                Dates: {
+                    StartDate: StartDate,
+                    EndDate: EndDate,
+                },
+                Days: Days,
+                DateIssue: currentDate.toLocaleDateString(),
+                CarHire: parseFloat(document.querySelector('.car_hire-total').textContent) || 0,
+                Flight: parseFloat(document.querySelector('.flight-total').textContent) || 0,
+                Extras: parseFloat(document.querySelector('.extras-total').textContent) || 0,
+                CostAdult: parseFloat(document.querySelector('.conservation-adult-cost').textContent) + parseFloat(document.querySelector('.concession-adult-cost').textContent) || 0,
+                Adults: parseInt(document.querySelector('.conservation-adult-count').textContent) + parseInt(document.querySelector('.concession-adult-count').textContent) || 0,
+                CostChildren: parseFloat(document.querySelector('.conservation-child-cost').textContent) + parseFloat(document.querySelector('.concession-child-cost').textContent) || 0,
+                Children: parseInt(document.querySelector('.conservation-child-count').textContent) + parseInt(document.querySelector('.concession-child-count').textContent) + parseInt(document.querySelector('.conservation-infant-count').textContent) + parseInt(document.querySelector('.concession-infant-count').textContent) || 0,
+                SubTotal: parseFloat(document.querySelector('.total').textContent) || 0,
+                Total: document.querySelector('.total').textContent || 0,
+                BalanceDue: invoice_amount,
+                BalanceRemaining: invoice_amount,
+                park_name: document.getElementById('parks').value,
+                hotel_name: document.getElementById('hotels').value || '',
+                discount: document.getElementById('discount').value || 0,
+            };
+
+            console.table(invoice)
         }
     </script>
 </body>
