@@ -4,49 +4,85 @@ require 'vendor/autoload.php';
 
 use mikehaertl\pdftk\Pdf;
 
+$dbFilePath = './oddyseys.db';
+
+
+$pdo = new PDO("sqlite:" . $dbFilePath);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    // Define the path to your template PDF file
-    $pdfFile = 'form.pdf';
+    $pdfFile = 'invoice_template.pdf';
+    $rawData = $_POST['invoice'];
+    $P_DATA = json_decode($rawData, true);
 
-    // Map the incoming POST data to the PDF fields
     $data = [
-        'DateIssue' => $_POST['DateIssue'] ?? '',
-        'Customer Name 1' => $_POST['CustomerName1'] ?? '',
-        'Days' => $_POST['Days'] ?? '',
-        'ConservartionAdultCost' => $_POST['ConservationAdultCost'] ?? 0,
-        'ConcessionAdultCost' => $_POST['ConcessionAdultCost'] ?? 0,
-        'ConservartionChildrenCost' => $_POST['ConservationChildrenCost'] ?? 0,
-        'ConcessionChildrenCost' => $_POST['ConcessionChildrenCost'] ?? 0,
-        'ConservartionAdultCount' => $_POST['ConservationAdultCount'] ?? 0,
-        'ConcessionAdultCount' => $_POST['ConcessionAdultCount'] ?? 0,
-        'ConservartionChildrenCount' => $_POST['ConservationChildrenCount'] ?? 0,
-        'ConcessionChildrenCount' => $_POST['ConcessionChildrenCount'] ?? 0,
-        'ConservationTotal' => $_POST['ConservationTotal'] ?? 0,
-        'ConcessionTotal' => $_POST['ConcessionTotal'] ?? 0,
-        'HotelTotal' => $_POST['HotelTotal'] ?? 0,
-        'CarHireTotal' => $_POST['CarHireTotal'] ?? 0,
-        'FlightTotal' => $_POST['FlightTotal'] ?? 0,
-        'ExtraTotal' => $_POST['ExtraTotal'] ?? 0,
-        'Total' => $_POST['Total'] ?? 0,
-        'Balance Due' => $_POST['BalanceDue'] ?? 0,
-        'Balance Remaining' => $_POST['BalanceRemaining'] ?? 0,
-        'Customer Name 2' => $_POST['CustomerName2'] ?? '',
+        'DateIssue' => $P_DATA['DateIssue'] ?? '',
+        'Customer Name 1' => $P_DATA['CustomerName1'] ?? '',
+        'Days' => $P_DATA['Days'] ?? '',
+        'ConservartionAdultCost' => $P_DATA['ConservationAdultCost'] ?? 0,
+        'ConcessionAdultCost' => $P_DATA['ConcessionAdultCost'] ?? 0,
+        'ConservartionChildrenCost' => $P_DATA['ConservationChildrenCost'] ?? 0,
+        'ConcessionChildrenCost' => $P_DATA['ConcessionChildrenCost'] ?? 0,
+        'ConservartionAdultCount' => $P_DATA['ConservationAdultCount'] ?? 0,
+        'ConcessionAdultCount' => $P_DATA['ConcessionAdultCount'] ?? 0,
+        'ConservartionChildrenCount' => $P_DATA['ConservationChildrenCount'] ?? 0,
+        'ConcessionChildrenCount' => $P_DATA['ConcessionChildrenCount'] ?? 0,
+        'ConservationTotal' => $P_DATA['ConservationTotal'] ?? 0,
+        'ConcessionTotal' => $P_DATA['ConcessionTotal'] ?? 0,
+        'HotelTotal' => $P_DATA['HotelTotal'] ?? 0,
+        'CarHireTotal' => $P_DATA['CarHireTotal'] ?? 0,
+        'FlightTotal' => $P_DATA['FlightTotal'] ?? 0,
+        'ExtraTotal' => $P_DATA['ExtraTotal'] ?? 0,
+        'Total' => $P_DATA['invoice_amount'] ?? 0,
+        'Balance Due' => $P_DATA['invoice_amount'] ?? 0,
+        'Balance Remaining' => $P_DATA['invoice_amount'] ?? 0,
+        'Customer Name 2' => $P_DATA['CustomerName'] ?? '',
     ];
 
-    $pdf = new Pdf($pdfFile);
+    $pdf = new Pdf('invoice_template.pdf', [
+        'command' => './pdftk.exe',
+    ]);
 
-    $outputFile = 'invoice_' . $_POST['CustomerName2'] . '.pdf';
+    $outputFile = __DIR__ . '/invoice.pdf';
 
-    // Fill and flatten the form
+    $invoiceData = [
+        'invoice_date' => date('Y-m-d'),
+        'customer_name' => $P_DATA['CustomerName'],
+        'invoice_amount' => $P_DATA['invoice_amount'],
+        'paid' => 0,
+        'start_date' => $P_DATA['Dates']['StartDate'],
+        'end_date' => $P_DATA['Dates']['EndDate'],
+        'hotel_name' => $P_DATA['hotel_name'] ?? '',
+        'park_name' => $P_DATA['park_name'],
+        'extras_amount' => $P_DATA['extras_amount'] ?? 0.00,
+        'extras_description' => $P_DATA['extras_desc'] ?? '',
+        'discount_amount' => $P_DATA['discount_amount'] ?? 0.00,
+        'cost_amount' => $P_DATA['cost_amount']
+    ];
+
+    $stmt = $pdo->prepare("
+    INSERT INTO invoices (
+        invoice_date, customer_name, invoice_amount, paid,
+        start_date, end_date, hotel_name, park_name,
+        extras_amount, extras_description, discount_amount, cost_amount
+    ) VALUES (
+        :invoice_date, :customer_name, :invoice_amount, :paid,
+        :start_date, :end_date, :hotel_name, :park_name,
+        :extras_amount, :extras_description, :discount_amount, :cost_amount
+    )
+");
+    $stmt->execute($invoiceData);
     $result = $pdf->fillForm($data)
         ->flatten()
         ->saveAs($outputFile);
-
     if (!$result) {
-        // Handle errors
-        echo 'Error: ' . $pdf->getError();
+        echo json_encode(["error" => "Failed to generate PDF: " . $pdf->getError()]);
     } else {
-        echo "PDF generated successfully: $outputFile";
+        echo json_encode([
+            "success" => true,
+            "invoice_id" => $pdo->lastInsertId(),
+            "pdf_file" => $outputFile,
+        ]);
     }
 }
