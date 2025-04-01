@@ -466,7 +466,7 @@
         document.getElementById('discount').addEventListener('change', compute);
 
 
-        function compute() {
+        async function compute () {
             let people = {
                 EA_Adult: parseInt(document.getElementById('EA-Adult').value) || 0,
                 EA_Child: parseInt(document.getElementById('EA-Child').value) || 0,
@@ -494,7 +494,7 @@
             };
 
             let xhr = new XMLHttpRequest();
-            xhr.open('POST', 'compute.php', true);
+            xhr.open('POST', 'get_cost.php', true);
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 400) {
@@ -583,7 +583,7 @@
                 element.classList.remove('hidden');
             }
         }
-        const generate_invoice = (e) => {
+        const generate_invoice = async (e) => {
             e.preventDefault();
             let StartDate = document.getElementById('start_date').value;
             let EndDate = document.getElementById('end_date').value;
@@ -595,6 +595,7 @@
             let Difference_In_Time = date2.getTime() - date1.getTime();
 
             let Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
+
             let invoice_amount = document.getElementById('invoice-amount').value || 0;
 
             let invoice = {
@@ -605,20 +606,24 @@
                 },
                 Days: Days,
                 DateIssue: currentDate.toLocaleDateString(),
+                HotelTotal: parseFloat(document.querySelector('.hotel-total').textContent) || 0,
                 CarHire: parseFloat(document.querySelector('.car_hire-total').textContent) || 0,
                 Flight: parseFloat(document.querySelector('.flight-total').textContent) || 0,
                 Extras: parseFloat(document.querySelector('.extras-total').textContent) || 0,
-                CostAdult: parseFloat(document.querySelector('.conservation-adult-cost').textContent) + parseFloat(document.querySelector('.concession-adult-cost').textContent) || 0,
-                Adults: parseInt(document.querySelector('.conservation-adult-count').textContent) + parseInt(document.querySelector('.concession-adult-count').textContent) || 0,
-                CostChildren: parseFloat(document.querySelector('.conservation-child-cost').textContent) + parseFloat(document.querySelector('.concession-child-cost').textContent) || 0,
-                Children: parseInt(document.querySelector('.conservation-child-count').textContent) + parseInt(document.querySelector('.concession-child-count').textContent) + parseInt(document.querySelector('.conservation-infant-count').textContent) + parseInt(document.querySelector('.concession-infant-count').textContent) || 0,
-                SubTotal: parseFloat(document.querySelector('.total').textContent) || 0,
-                Total: document.querySelector('.total').textContent || 0,
-                BalanceDue: invoice_amount,
-                BalanceRemaining: invoice_amount,
+                ConservationAdultCost: parseFloat(document.querySelector('.conservation-adult-cost').textContent) || 0,
+                ConcessionAdultCost: parseFloat(document.querySelector('.concession-adult-cost').textContent) || 0,
+                ConservationAdultCount: parseInt(document.querySelector('.conservation-adult-count').textContent) || 0,
+                ConcessionAdultCount: parseInt(document.querySelector('.concession-adult-count').textContent) || 0,
+                ConservationChildrenCost: parseFloat(document.querySelector('.conservation-child-cost').textContent) + parseFloat(document.querySelector('.conservation-infant-cost').textContent) || 0,
+                ConcessionChildrenCost: parseFloat(document.querySelector('.concession-child-cost').textContent) + parseFloat(document.querySelector('.concession-infant-cost').textContent) || 0,
+                ConservationChildrenCount: parseInt(document.querySelector('.conservation-child-count').textContent) + parseInt(document.querySelector('.conservation-infant-count').textContent) || 0,
+                ConcessionChildrenCount: parseInt(document.querySelector('.concession-child-count').textContent) + parseInt(document.querySelector('.concession-infant-count').textContent) || 0,
+                invoice_amount: invoice_amount,
                 park_name: document.getElementById('parks').value,
                 hotel_name: document.getElementById('hotels').value || '',
-                discount: document.getElementById('discount').value || 0,
+                discount_amount: document.getElementById('discount').value || 0,
+                extras_desc: document.getElementById('extra-desc').value || 0,
+                cost_amount: document.querySelector('.total').textContent || 0,
             };
 
             console.table(invoice)
