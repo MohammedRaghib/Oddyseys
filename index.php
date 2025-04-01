@@ -294,58 +294,143 @@
         </form>
         <section class="preview">
             <div class="container">
-                <h2 class="section-title">Conservation Fees</h2>
+                <h2 class="section-title">Cost Details</h2>
 
-                <div class="item-row conservation-adult conservation-section">
-                    <div><span class="conservation-adult-count">0</span> Adults @ USD <span class="conservation-adult-cost">0</span></div>
-                    <span></span>
-                    <div>= USD <span class="conservation-adult-total">0</span></div>
-                </div>
-                <div class="item-row conservation-child conservation-section">
-                    <div><span class="conservation-child-count">0</span> Children @ USD <span class="conservation-child-cost">0</span></div>
-                    <span></span>
-                    <div>= USD <span class="conservation-child-total">0</span></div>
-                </div>
-                <div class="item-row conservation-infant conservation-section">
-                    <div><span class="conservation-infant-count">0</span> Infants @ USD <span class="conservation-infant-cost">0</span></div>
-                    <span></span>
-                    <div>= USD <span class="conservation-infant-total">0</span></div>
-                </div>
-
-                <h2 class="section-title">Concession Fees</h2>
-
-                <div class="item-row concession-adult concession-section">
-                    <div><span class="concession-adult-count">0</span> Adults @ USD <span class="concession-adult-cost">0</span></div>
-                    <span></span>
-                    <div>= USD <span class="concession-adult-total">0</span></div>
-                </div>
-                <div class="item-row concession-child concession-section">
-                    <div><span class="concession-child-count">0</span> Children @ USD <span class="concession-child-cost">0</span></div>
-                    <span></span>
-                    <div>= USD <span class="concession-child-total">0</span></div>
-                </div>
-                <div class="item-row concession-infant concession-section">
-                    <div><span class="concession-infant-count">0</span> Infants @ USD <span class="concession-infant-cost">0</span></div>
-                    <span></span>
-                    <div>= USD <span class="concession-infant-total">0</span></div>
+                <!-- Conservation Fees -->
+                <h3>Conservation Fees (18% TAX INCLUDED IN ALL AMOUNTS)</h3>
+                <div id="conservation-ea-section">
+                    <h4>EA Citizens</h4>
+                    <div class="item-row conservation-ea-adult">
+                        <div><span class="conservation-ea-adult-count">0</span> Adults @ USD <span class="conservation-ea-adult-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-ea-adult-total">0</span></div>
+                    </div>
+                    <div class="item-row conservation-ea-child">
+                        <div><span class="conservation-ea-child-count">0</span> Children @ USD <span class="conservation-ea-child-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-ea-child-total">0</span></div>
+                    </div>
+                    <div class="item-row conservation-ea-infant">
+                        <div><span class="conservation-ea-infant-count">0</span> Infants @ USD <span class="conservation-ea-infant-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-ea-infant-total">0</span></div>
+                    </div>
                 </div>
 
-                <div class="total-row hotel hotel-section">
+                <div id="conservation-non-ea-section">
+                    <h4>Non EA Citizens</h4>
+                    <div class="item-row conservation-non-ea-adult">
+                        <div><span class="conservation-non-ea-adult-count">0</span> Adults @ USD <span class="conservation-non-ea-adult-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-non-ea-adult-total">0</span></div>
+                    </div>
+                    <div class="item-row conservation-non-ea-child">
+                        <div><span class="conservation-non-ea-child-count">0</span> Children @ USD <span class="conservation-non-ea-child-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-non-ea-child-total">0</span></div>
+                    </div>
+                    <div class="item-row conservation-non-ea-infant">
+                        <div><span class="conservation-non-ea-infant-count">0</span> Infants @ USD <span class="conservation-non-ea-infant-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-non-ea-infant-total">0</span></div>
+                    </div>
+                </div>
+
+                <div id="conservation-tz-section">
+                    <h4>TZ Residents</h4>
+                    <div class="item-row conservation-tz-adult">
+                        <div><span class="conservation-tz-adult-count">0</span> Adults @ USD <span class="conservation-tz-adult-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-tz-adult-total">0</span></div>
+                    </div>
+                    <div class="item-row conservation-tz-child">
+                        <div><span class="conservation-tz-child-count">0</span> Children @ USD <span class="conservation-tz-child-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-tz-child-total">0</span></div>
+                    </div>
+                    <div class="item-row conservation-tz-infant">
+                        <div><span class="conservation-tz-infant-count">0</span> Infants @ USD <span class="conservation-tz-infant-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="conservation-tz-infant-total">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Concession Fees -->
+                <h3>Concession Fees (18% TAX INCLUDED IN ALL AMOUNTS)</h3>
+                <div id="concession-ea-section">
+                    <h4>EA Citizens</h4>
+                    <div class="item-row concession-ea-adult">
+                        <div><span class="concession-ea-adult-count">0</span> Adults @ USD <span class="concession-ea-adult-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-ea-adult-total">0</span></div>
+                    </div>
+                    <div class="item-row concession-ea-child">
+                        <div><span class="concession-ea-child-count">0</span> Children @ USD <span class="concession-ea-child-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-ea-child-total">0</span></div>
+                    </div>
+                    <div class="item-row concession-ea-infant">
+                        <div><span class="concession-ea-infant-count">0</span> Infants @ USD <span class="concession-ea-infant-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-ea-infant-total">0</span></div>
+                    </div>
+                </div>
+
+                <div id="concession-non-ea-section">
+                    <h4>Non EA Citizens</h4>
+                    <div class="item-row concession-non-ea-adult">
+                        <div><span class="concession-non-ea-adult-count">0</span> Adults @ USD <span class="concession-non-ea-adult-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-non-ea-adult-total">0</span></div>
+                    </div>
+                    <div class="item-row concession-non-ea-child">
+                        <div><span class="concession-non-ea-child-count">0</span> Children @ USD <span class="concession-non-ea-child-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-non-ea-child-total">0</span></div>
+                    </div>
+                    <div class="item-row concession-non-ea-infant">
+                        <div><span class="concession-non-ea-infant-count">0</span> Infants @ USD <span class="concession-non-ea-infant-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-non-ea-infant-total">0</span></div>
+                    </div>
+                </div>
+
+                <div id="concession-tz-section">
+                    <h4>TZ Residents</h4>
+                    <div class="item-row concession-tz-adult">
+                        <div><span class="concession-tz-adult-count">0</span> Adults @ USD <span class="concession-tz-adult-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-tz-adult-total">0</span></div>
+                    </div>
+                    <div class="item-row concession-tz-child">
+                        <div><span class="concession-tz-child-count">0</span> Children @ USD <span class="concession-tz-child-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-tz-child-total">0</span></div>
+                    </div>
+                    <div class="item-row concession-tz-infant">
+                        <div><span class="concession-tz-infant-count">0</span> Infants @ USD <span class="concession-tz-infant-cost">0</span></div>
+                        <span></span>
+                        <div>= USD <span class="concession-tz-infant-total">0</span></div>
+                    </div>
+                </div>
+
+                <!-- Other Costs -->
+                <div class="total-row hotel">
                     <div><span class="hotel-count no-line">0</span> DAYS HOTEL @ USD <span class="hotel-cost no-line">0</span></div>
                     <span></span>
                     <div>= USD <span class="hotel-total">0</span></div>
                 </div>
-                <div class="total-row car_hire car_hire-section">
+                <div class="total-row car_hire">
                     <div>CAR HIRE</div>
                     <span></span>
                     <div>= USD <span class="car_hire-total">0</span></div>
                 </div>
-                <div class="total-row flight flight-section">
+                <div class="total-row flight">
                     <div>FLIGHT</div>
                     <span></span>
                     <div>= USD <span class="flight-total">0</span></div>
                 </div>
-                <div class="total-row extras extras-section">
+                <div class="total-row extras">
                     <div>EXTRAS</div>
                     <span></span>
                     <div>= USD <span class="extras-total">0</span></div>
@@ -466,7 +551,7 @@
         document.getElementById('discount').addEventListener('change', compute);
 
 
-        async function compute () {
+        async function compute() {
             let people = {
                 EA_Adult: parseInt(document.getElementById('EA-Adult').value) || 0,
                 EA_Child: parseInt(document.getElementById('EA-Child').value) || 0,
@@ -498,6 +583,7 @@
             xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
             xhr.onload = function() {
                 if (xhr.status >= 200 && xhr.status < 400) {
+                    console.log(xhr.responseText);
                     let response = JSON.parse(xhr.responseText);
                     updatePreview(response);
                 } else {
@@ -512,67 +598,77 @@
             xhr.send('data=' + encodeURIComponent(JSON.stringify(all_data)));
         };
 
-        function updatePreview(data) {
+        async function updatePreview(data) {
             // Update Conservation Fees
-            document.querySelector('.conservation-adult-count').textContent = data.conservation.adult.count;
-            document.querySelector('.conservation-adult-cost').textContent = data.conservation.adult.per;
-            document.querySelector('.conservation-adult-total').textContent = data.conservation.adult.total;
-            toggleVisibility('.conservation-adult', data.conservation.adult.total);
+            updateSection('.conservation-ea-adult', data.conservation.ea.adult);
+            updateSection('.conservation-ea-child', data.conservation.ea.child);
+            updateSection('.conservation-ea-infant', data.conservation.ea.infant);
+            toggleSectionVisibility('#conservation-ea-section', [data.conservation.ea.adult, data.conservation.ea.child, data.conservation.ea.infant]);
 
-            document.querySelector('.conservation-child-count').textContent = data.conservation.child.count;
-            document.querySelector('.conservation-child-cost').textContent = data.conservation.child.per;
-            document.querySelector('.conservation-child-total').textContent = data.conservation.child.total;
-            toggleVisibility('.conservation-child', data.conservation.child.total);
+            updateSection('.conservation-non-ea-adult', data.conservation.non_ea.adult);
+            updateSection('.conservation-non-ea-child', data.conservation.non_ea.child);
+            updateSection('.conservation-non-ea-infant', data.conservation.non_ea.infant);
+            toggleSectionVisibility('#conservation-non-ea-section', [data.conservation.non_ea.adult, data.conservation.non_ea.child, data.conservation.non_ea.infant]);
 
-            document.querySelector('.conservation-infant-count').textContent = data.conservation.infant.count;
-            document.querySelector('.conservation-infant-cost').textContent = data.conservation.infant.per;
-            document.querySelector('.conservation-infant-total').textContent = data.conservation.infant.total;
-            toggleVisibility('.conservation-infant', data.conservation.infant.total);
+            updateSection('.conservation-tz-adult', data.conservation.tz.adult);
+            updateSection('.conservation-tz-child', data.conservation.tz.child);
+            updateSection('.conservation-tz-infant', data.conservation.tz.infant);
+            toggleSectionVisibility('#conservation-tz-section', [data.conservation.tz.adult, data.conservation.tz.child, data.conservation.tz.infant]);
 
             // Update Concession Fees
-            document.querySelector('.concession-adult-count').textContent = data.consession.adult.count;
-            document.querySelector('.concession-adult-cost').textContent = data.consession.adult.per;
-            document.querySelector('.concession-adult-total').textContent = data.consession.adult.total;
-            toggleVisibility('.concession-adult', data.consession.adult.total);
+            updateSection('.concession-ea-adult', data.consession.ea.adult);
+            updateSection('.concession-ea-child', data.consession.ea.child);
+            updateSection('.concession-ea-infant', data.consession.ea.infant);
+            toggleSectionVisibility('#concession-ea-section', [data.consession.ea.adult, data.consession.ea.child, data.consession.ea.infant]);
 
-            document.querySelector('.concession-child-count').textContent = data.consession.child.count;
-            document.querySelector('.concession-child-cost').textContent = data.consession.child.per;
-            document.querySelector('.concession-child-total').textContent = data.consession.child.total;
-            toggleVisibility('.concession-child', data.consession.child.total);
+            updateSection('.concession-non-ea-adult', data.consession.non_ea.adult);
+            updateSection('.concession-non-ea-child', data.consession.non_ea.child);
+            updateSection('.concession-non-ea-infant', data.consession.non_ea.infant);
+            toggleSectionVisibility('#concession-non-ea-section', [data.consession.non_ea.adult, data.consession.non_ea.child, data.consession.non_ea.infant]);
 
-            document.querySelector('.concession-infant-count').textContent = data.consession.infant.count;
-            document.querySelector('.concession-infant-cost').textContent = data.consession.infant.per;
-            document.querySelector('.concession-infant-total').textContent = data.consession.infant.total;
-            toggleVisibility('.concession-infant', data.consession.infant.total);
-
-            //hotel
-            document.querySelector('.hotel-count').textContent = data.hotel.count;
-            document.querySelector('.hotel-cost').textContent = data.hotel.per;
-            document.querySelector('.hotel-total').textContent = data.hotel.total;
-            toggleVisibility('.hotel', data.hotel.total);
+            updateSection('.concession-tz-adult', data.consession.tz.adult);
+            updateSection('.concession-tz-child', data.consession.tz.child);
+            updateSection('.concession-tz-infant', data.consession.tz.infant);
+            toggleSectionVisibility('#concession-tz-section', [data.consession.tz.adult, data.consession.tz.child, data.consession.tz.infant]);
 
             // Update Other Costs
-            document.querySelector('.car_hire-total').textContent = data.car_hire;
-            toggleVisibility('.car_hire', data.car_hire);
-            document.querySelector('.flight-total').textContent = data.flight;
-            toggleVisibility('.flight', data.flight);
-            document.querySelector('.extras-total').textContent = data.extras;
-            toggleVisibility('.extras', data.extras);
+            updateElement('.hotel', data.hotel);
+            updateElement('.car_hire', {
+                total: data.car_hire
+            });
+            updateElement('.flight', {
+                total: data.flight
+            });
+            updateElement('.extras', {
+                total: data.extras
+            });
 
-            let total = document.querySelector('.total');
-            let profit = document.getElementById('profit').value || 0;
-            let discount = document.getElementById('discount').value || 0;
-            let invoice = document.getElementById('invoice-amount').value || 0;
-            let data_total = parseFloat(data.total);
+            // Update Total Cost
+            document.querySelector('.total').textContent = data.total;
+        }
 
-            total.textContent = data.total;
+        function updateSection(selector, data) {
+            let countElement = document.querySelector(selector + '-count');
+            let costElement = document.querySelector(selector + '-cost');
+            let totalElement = document.querySelector(selector + '-total');
 
-            let calculated = data_total + (data_total * (profit / 100));
-            calculated = calculated - (calculated * (discount / 100)); 
-            invoice = calculated.toFixed(1);
+            countElement.textContent = data.count;
+            costElement.textContent = data.per;
+            totalElement.textContent = data.total;
 
-            document.getElementById('invoice-amount').value = invoice;
-            document.getElementById('total-cost').value = data.total;
+            toggleVisibility(selector, data.total);
+        }
+
+        function updateElement(selector, data) {
+            let countElement = document.querySelector(selector + '-count');
+            let costElement = document.querySelector(selector + '-cost');
+            let totalElement = document.querySelector(selector + '-total');
+
+            if (countElement) countElement.textContent = data.count || '';
+            if (costElement) costElement.textContent = data.per || '';
+            totalElement.textContent = data.total;
+
+            toggleVisibility(selector, data.total);
         }
 
         function toggleVisibility(selector, value) {
@@ -581,6 +677,16 @@
                 element.classList.add('hidden');
             } else {
                 element.classList.remove('hidden');
+            }
+        }
+
+        function toggleSectionVisibility(sectionSelector, dataArray) {
+            let totalCount = dataArray.reduce((acc, data) => acc + data.count, 0);
+            let sectionElement = document.querySelector(sectionSelector);
+            if (totalCount === 0) {
+                sectionElement.classList.add('hidden');
+            } else {
+                sectionElement.classList.remove('hidden');
             }
         }
         const generate_invoice = async (e) => {

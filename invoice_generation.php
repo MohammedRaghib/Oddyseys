@@ -6,37 +6,47 @@ use mikehaertl\pdftk\Pdf;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $pdftkPath = __DIR__ . '/pdftk.exe';
-
+    // Define the path to your template PDF file
     $pdfFile = 'form.pdf';
 
+    // Map the incoming POST data to the PDF fields
     $data = [
         'DateIssue' => $_POST['DateIssue'] ?? '',
         'Customer Name 1' => $_POST['CustomerName1'] ?? '',
         'Days' => $_POST['Days'] ?? '',
-        'Car Hire' => $_POST['CarHire'] ?? '',
-        'Flight' => $_POST['Flight'] ?? '',
-        'Extras' => $_POST['Extras'] ?? '',
-        'Cost Adult' => $_POST['CostAdult'] ?? '',
-        'Adults' => $_POST['Adults'] ?? '',
-        'Cost Children' => $_POST['CostChildren'] ?? '',
-        'Children' => $_POST['Children'] ?? '',
-        'SubTotal' => $_POST['invoice_amount'] ?? '',
-        'Total' => $_POST['invoice_amount'] ?? '',
-        'Balance Due' => $_POST['invoice_amount'] ?? '',
-        'Balance Remaining' => $_POST['BalanceRemaining'] ?? '',
+        'ConservartionAdultCost' => $_POST['ConservationAdultCost'] ?? 0,
+        'ConcessionAdultCost' => $_POST['ConcessionAdultCost'] ?? 0,
+        'ConservartionChildrenCost' => $_POST['ConservationChildrenCost'] ?? 0,
+        'ConcessionChildrenCost' => $_POST['ConcessionChildrenCost'] ?? 0,
+        'ConservartionAdultCount' => $_POST['ConservationAdultCount'] ?? 0,
+        'ConcessionAdultCount' => $_POST['ConcessionAdultCount'] ?? 0,
+        'ConservartionChildrenCount' => $_POST['ConservationChildrenCount'] ?? 0,
+        'ConcessionChildrenCount' => $_POST['ConcessionChildrenCount'] ?? 0,
+        'ConservationTotal' => $_POST['ConservationTotal'] ?? 0,
+        'ConcessionTotal' => $_POST['ConcessionTotal'] ?? 0,
+        'HotelTotal' => $_POST['HotelTotal'] ?? 0,
+        'CarHireTotal' => $_POST['CarHireTotal'] ?? 0,
+        'FlightTotal' => $_POST['FlightTotal'] ?? 0,
+        'ExtraTotal' => $_POST['ExtraTotal'] ?? 0,
+        'Total' => $_POST['Total'] ?? 0,
+        'Balance Due' => $_POST['BalanceDue'] ?? 0,
+        'Balance Remaining' => $_POST['BalanceRemaining'] ?? 0,
         'Customer Name 2' => $_POST['CustomerName2'] ?? '',
     ];
 
-    $pdf = new Pdf($pdfFile, ['command' => $pdftkPath]);
+    $pdf = new Pdf($pdfFile);
 
-    $pdf->fillForm($data)
+    $outputFile = 'invoice_' . $_POST['CustomerName2'] . '.pdf';
+
+    // Fill and flatten the form
+    $result = $pdf->fillForm($data)
         ->flatten()
-        ->saveAs('invoice.pdf');
+        ->saveAs($outputFile);
 
-    if ($pdf->getError()) {
+    if (!$result) {
+        // Handle errors
         echo 'Error: ' . $pdf->getError();
     } else {
-        echo 'PDF form fields filled successfully!';
+        echo "PDF generated successfully: $outputFile";
     }
-};
+}
