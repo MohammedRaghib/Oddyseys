@@ -645,13 +645,13 @@
             });
 
             document.querySelector('.total').textContent = data.total;
-            let total_input = parseFloat(document.getElementById('total-cost').value) || 0;
             let profit_input = parseFloat(document.getElementById('profit').value) || 0;
             let discount_input = parseFloat(document.getElementById('discount').value) || 0;
 
             let calced = (data.total * (1 + (profit_input / 100))) * (1 - (discount_input / 100));
 
             document.getElementById('invoice-amount').value = calced.toFixed(2);
+            document.getElementById('total-cost').value = data.total;
         }
 
         function updateSection(selector, data) {
