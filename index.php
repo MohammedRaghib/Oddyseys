@@ -443,6 +443,7 @@
             </div>
         </section>
     </main>
+    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
     <script>
         document.getElementById('country').addEventListener('change', function() {
             let selectedCountry = this.value;
@@ -487,7 +488,7 @@
                 };
                 xhr.send('country=' + encodeURIComponent(selectedCountry));
             } else {
-                parksSelect.style.display = 'none';
+                parksSelect.style.display = ' none';
                 parksLabel.style.display = 'none';
                 hotelsSelect.style.display = 'none';
                 hotelsLabel.style.display = 'none';
@@ -531,7 +532,7 @@
                 };
                 xhr.send('park=' + encodeURIComponent(selectedPark));
             } else {
-                hotelsSelect.style.display = 'none';
+                hotelsSelect.style.display = ' none';
                 hotelsLabel.style.display = 'none';
                 hotelsCost.style.display = 'none';
                 hotelsCostLabel.style.display = 'none';
@@ -547,6 +548,7 @@
         document.getElementById('extra-cost-initial').addEventListener('change', compute);
         document.getElementById('flight-cost-initial').addEventListener('change', compute);
         document.getElementById('car_hire-cost-initial').addEventListener('change', compute);
+        document.getElementById('total-cost').addEventListener('change', compute);
         document.getElementById('profit').addEventListener('change', compute);
         document.getElementById('discount').addEventListener('change', compute);
 
@@ -599,7 +601,7 @@
 
         async function updatePreview(data) {
             // Update Conservation Fees
-            updateSection('.conservation-ea-adult', data.conservation.ea.adult);
+            updateSection(' .conservation-ea-adult', data.conservation.ea.adult);
             updateSection('.conservation-ea-child', data.conservation.ea.child);
             updateSection('.conservation-ea-infant', data.conservation.ea.infant);
             toggleSectionVisibility('#conservation-ea-section', [data.conservation.ea.adult, data.conservation.ea.child, data.conservation.ea.infant]);
@@ -642,8 +644,14 @@
                 total: data.extras
             });
 
-            // Update Total Cost
             document.querySelector('.total').textContent = data.total;
+            let total_input = parseFloat(document.getElementById('total-cost').value) || 0;
+            let profit_input = parseFloat(document.getElementById('profit').value) || 0;
+            let discount_input = parseFloat(document.getElementById('discount').value) || 0;
+
+            let calced = (data.total * (1 + (profit_input / 100))) * (1 - (discount_input / 100));
+
+            document.getElementById('invoice-amount').value = calced.toFixed(2);
         }
 
         function updateSection(selector, data) {
@@ -690,8 +698,8 @@
         }
         const generate_invoice = async (e) => {
             e.preventDefault();
-            let StartDate = document.getElementById('start_date').value;
-            let EndDate = document.getElementById('end_date').value;
+            let StartDate = document.getElementById("start_date").value;
+            let EndDate = document.getElementById("end_date").value;
 
             let date1 = new Date(StartDate);
             let date2 = new Date(EndDate);
@@ -700,83 +708,141 @@
             let Difference_In_Time = date2.getTime() - date1.getTime();
             let Days = Math.round(Difference_In_Time / (1000 * 3600 * 24));
 
-            let invoice_amount = document.getElementById('invoice-amount').value || 0;
+            let invoice_amount = document.getElementById("invoice-amount").value || 0;
 
             let invoice = {
-                CustomerName: document.getElementById('customer_name').value,
+                CustomerName: document.getElementById("customer_name").value,
                 Dates: {
                     StartDate: StartDate,
                     EndDate: EndDate,
                 },
                 Days: Days,
                 DateIssue: currentDate.toLocaleDateString(),
-                HotelTotal: parseFloat(document.querySelector('.hotel-total').textContent) || 0,
-                CarHire: parseFloat(document.querySelector('.car_hire-total').textContent) || 0,
-                Flight: parseFloat(document.querySelector('.flight-total').textContent) || 0,
-                Extras: parseFloat(document.querySelector('.extras-total').textContent) || 0,
-                ConservationAdultCost: (
-                    parseFloat(document.querySelector('.conservation-ea-adult-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-non-ea-adult-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-tz-adult-cost').textContent)
-                ) || 0,
-                ConcessionAdultCost: (
-                    parseFloat(document.querySelector('.concession-ea-adult-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-non-ea-adult-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-tz-adult-cost').textContent)
-                ) || 0,
-                ConservationAdultCount: (
-                    parseInt(document.querySelector('.conservation-ea-adult-count').textContent) +
-                    parseInt(document.querySelector('.conservation-non-ea-adult-count').textContent) +
-                    parseInt(document.querySelector('.conservation-tz-adult-count').textContent)
-                ) || 0,
-                ConcessionAdultCount: (
-                    parseInt(document.querySelector('.concession-ea-adult-count').textContent) +
-                    parseInt(document.querySelector('.concession-non-ea-adult-count').textContent) +
-                    parseInt(document.querySelector('.concession-tz-adult-count').textContent)
-                ) || 0,
-                ConservationChildrenCost: (
-                    parseFloat(document.querySelector('.conservation-ea-child-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-ea-infant-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-non-ea-child-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-non-ea-infant-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-tz-child-cost').textContent) +
-                    parseFloat(document.querySelector('.conservation-tz-infant-cost').textContent)
-                ) || 0,
-                ConcessionChildrenCost: (
-                    parseFloat(document.querySelector('.concession-ea-child-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-ea-infant-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-non-ea-child-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-non-ea-infant-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-tz-child-cost').textContent) +
-                    parseFloat(document.querySelector('.concession-tz-infant-cost').textContent)
-                ) || 0,
-                ConservationChildrenCount: (
-                    parseInt(document.querySelector('.conservation-ea-child-count').textContent) +
-                    parseInt(document.querySelector('.conservation-ea-infant-count').textContent) +
-                    parseInt(document.querySelector('.conservation-non-ea-child-count').textContent) +
-                    parseInt(document.querySelector('.conservation-non-ea-infant-count').textContent) +
-                    parseInt(document.querySelector('.conservation-tz-child-count').textContent) +
-                    parseInt(document.querySelector('.conservation-tz-infant-count').textContent)
-                ) || 0,
-                ConcessionChildrenCount: (
-                    parseInt(document.querySelector('.concession-ea-child-count').textContent) +
-                    parseInt(document.querySelector('.concession-ea-infant-count').textContent) +
-                    parseInt(document.querySelector('.concession-non-ea-child-count').textContent) +
-                    parseInt(document.querySelector('.concession-non-ea-infant-count').textContent) +
-                    parseInt(document.querySelector('.concession-tz-child-count').textContent) +
-                    parseInt(document.querySelector('.concession-tz-infant-count').textContent)
-                ) || 0,
+                HotelTotal: parseFloat(document.querySelector(".hotel-total").textContent) || 0,
+                CarHire: parseFloat(document.querySelector(".car_hire-total").textContent) || 0,
+                Flight: parseFloat(document.querySelector(".flight-total").textContent) || 0,
+                Extras: parseFloat(document.querySelector(".extras-total").textContent) || 0,
+                ConservationAdultCost: parseFloat(
+                        document.querySelector(".conservation-ea-adult-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-non-ea-adult-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-tz-adult-cost").textContent
+                    ) || 0,
+                ConcessionAdultCost: parseFloat(
+                        document.querySelector(".concession-ea-adult-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-non-ea-adult-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-tz-adult-cost").textContent
+                    ) || 0,
+                ConservationAdultCount: parseInt(
+                        document.querySelector(".conservation-ea-adult-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-non-ea-adult-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-tz-adult-count").textContent
+                    ) || 0,
+                ConcessionAdultCount: parseInt(
+                        document.querySelector(".concession-ea-adult-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-non-ea-adult-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-tz-adult-count").textContent
+                    ) || 0,
+                ConservationChildrenCost: parseFloat(
+                        document.querySelector(".conservation-ea-child-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-ea-infant-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-non-ea-child-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-non-ea-infant-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-tz-child-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".conservation-tz-infant-cost").textContent
+                    ) || 0,
+                ConcessionChildrenCost: parseFloat(
+                        document.querySelector(".concession-ea-child-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-ea-infant-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-non-ea-child-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-non-ea-infant-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-tz-child-cost").textContent
+                    ) +
+                    parseFloat(
+                        document.querySelector(".concession-tz-infant-cost").textContent
+                    ) || 0,
+                ConservationChildrenCount: parseInt(
+                        document.querySelector(".conservation-ea-child-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-ea-infant-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-non-ea-child-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-non-ea-infant-count")
+                        .textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-tz-child-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".conservation-tz-infant-count").textContent
+                    ) || 0,
+                ConcessionChildrenCount: parseInt(
+                        document.querySelector(".concession-ea-child-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-ea-infant-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-non-ea-child-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-non-ea-infant-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-tz-child-count").textContent
+                    ) +
+                    parseInt(
+                        document.querySelector(".concession-tz-infant-count").textContent
+                    ) || 0,
                 invoice_amount: invoice_amount,
-                park_name: document.getElementById('parks').value,
-                hotel_name: document.getElementById('hotels').value || '',
-                discount_amount: document.getElementById('discount').value || 0,
-                extras_desc: document.getElementById('extra-desc').value || '',
-                cost_amount: document.querySelector('.total').textContent || 0,
+                park_name: document.getElementById("parks").value,
+                hotel_name: document.getElementById("hotels").value || "",
+                discount_amount: document.getElementById("discount").value || 0,
+                extras_desc: document.getElementById("extra-desc").value || "",
+                cost_amount: document.querySelector(".total").textContent || 0,
             };
 
+            /* This is for creating invoice in db table, using ajax */
             const xhr = new XMLHttpRequest()
             xhr.open('POST', 'invoice_generation.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+            xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.onload = function() {
                 console.log(xhr.responseText);
             };
@@ -786,7 +852,7 @@
                 console.error('Computing request failed.');
             };
             xhr.send('invoice=' + encodeURIComponent(JSON.stringify(invoice)));
-        }
+        };
     </script>
 </body>
 

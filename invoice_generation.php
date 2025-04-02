@@ -1,9 +1,5 @@
 <?php
 
-require 'vendor/autoload.php';
-
-use mikehaertl\pdftk\Pdf;
-
 $dbFilePath = './oddyseys.db';
 
 
@@ -40,10 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'Customer Name 2' => $P_DATA['CustomerName'] ?? '',
     ];
 
-    $pdf = new Pdf('invoice_template.pdf', [
-        'command' => './pdftk.exe',
-    ]);
-
     $outputFile = __DIR__ . '/invoice.pdf';
 
     $invoiceData = [
@@ -73,16 +65,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     )
 ");
     $stmt->execute($invoiceData);
-    $result = $pdf->fillForm($data)
-        ->flatten()
-        ->saveAs($outputFile);
-    if (!$result) {
-        echo json_encode(["error" => "Failed to generate PDF: " . $pdf->getError()]);
-    } else {
-        echo json_encode([
-            "success" => true,
-            "invoice_id" => $pdo->lastInsertId(),
-            "pdf_file" => $outputFile,
-        ]);
-    }
+    echo 'Succesfully created invoice!';
 }
