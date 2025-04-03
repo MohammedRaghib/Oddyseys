@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/pdf-lib"></script>
     <title>Choose</title>
     <style>
         body {
@@ -201,6 +202,20 @@
 
         .hidden {
             display: none;
+        }
+
+        .link {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .link a {
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff;
+            padding: 10px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -443,7 +458,10 @@
             </div>
         </section>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/pdf-lib/dist/pdf-lib.min.js"></script>
+    <aside class="link">
+        <a href="receipt.php">Generate receipt instead</a>
+    </aside>
+    <script src="https://unpkg.com/pdf-lib"></script>
     <script>
         document.getElementById('country').addEventListener('change', function() {
             let selectedCountry = this.value;
@@ -711,7 +729,7 @@
             let invoice_amount = document.getElementById("invoice-amount").value || 0;
 
             let invoice = {
-                CustomerName: document.getElementById("customer_name").value,
+                CustomerName: document.getElementById("customer_name").value || '',
                 Dates: {
                     StartDate: StartDate,
                     EndDate: EndDate,
@@ -723,22 +741,22 @@
                 Flight: parseFloat(document.querySelector(".flight-total").textContent) || 0,
                 Extras: parseFloat(document.querySelector(".extras-total").textContent) || 0,
                 ConservationAdultCost: parseFloat(
-                        document.querySelector(".conservation-ea-adult-cost").textContent
+                        document.querySelector(".conservation-ea-adult-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-non-ea-adult-cost").textContent
+                        document.querySelector(".conservation-non-ea-adult-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-tz-adult-cost").textContent
+                        document.querySelector(".conservation-tz-adult-total").textContent
                     ) || 0,
                 ConcessionAdultCost: parseFloat(
-                        document.querySelector(".concession-ea-adult-cost").textContent
+                        document.querySelector(".concession-ea-adult-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-non-ea-adult-cost").textContent
+                        document.querySelector(".concession-non-ea-adult-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-tz-adult-cost").textContent
+                        document.querySelector(".concession-tz-adult-total").textContent
                     ) || 0,
                 ConservationAdultCount: parseInt(
                         document.querySelector(".conservation-ea-adult-count").textContent
@@ -759,40 +777,40 @@
                         document.querySelector(".concession-tz-adult-count").textContent
                     ) || 0,
                 ConservationChildrenCost: parseFloat(
-                        document.querySelector(".conservation-ea-child-cost").textContent
+                        document.querySelector(".conservation-ea-child-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-ea-infant-cost").textContent
+                        document.querySelector(".conservation-ea-infant-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-non-ea-child-cost").textContent
+                        document.querySelector(".conservation-non-ea-child-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-non-ea-infant-cost").textContent
+                        document.querySelector(".conservation-non-ea-infant-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-tz-child-cost").textContent
+                        document.querySelector(".conservation-tz-child-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".conservation-tz-infant-cost").textContent
+                        document.querySelector(".conservation-tz-infant-total").textContent
                     ) || 0,
                 ConcessionChildrenCost: parseFloat(
-                        document.querySelector(".concession-ea-child-cost").textContent
+                        document.querySelector(".concession-ea-child-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-ea-infant-cost").textContent
+                        document.querySelector(".concession-ea-infant-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-non-ea-child-cost").textContent
+                        document.querySelector(".concession-non-ea-child-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-non-ea-infant-cost").textContent
+                        document.querySelector(".concession-non-ea-infant-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-tz-child-cost").textContent
+                        document.querySelector(".concession-tz-child-total").textContent
                     ) +
                     parseFloat(
-                        document.querySelector(".concession-tz-infant-cost").textContent
+                        document.querySelector(".concession-tz-infant-total").textContent
                     ) || 0,
                 ConservationChildrenCount: parseInt(
                         document.querySelector(".conservation-ea-child-count").textContent
@@ -840,9 +858,9 @@
             };
 
             /* This is for creating invoice in db table, using ajax */
-            const xhr = new XMLHttpRequest()
-            xhr.open('POST', 'invoice_generation.php', true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "invoice_generation.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.onload = function() {
                 console.log(xhr.responseText);
             };
@@ -851,7 +869,66 @@
                 console.log(xhr.responseText);
                 console.error('Computing request failed.');
             };
+            console.log('Invoice Data:', invoice);
             xhr.send('invoice=' + encodeURIComponent(JSON.stringify(invoice)));
+
+            async function fillPdf(invoice) {
+                try {
+                    const url = "./i_temp.pdf";
+                    const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
+
+                    const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
+                    const form = pdfDoc.getForm();
+
+                    form.getTextField("DateIssue").setText((invoice?.DateIssue || "").toString());
+                    form.getTextField("Customer Name 1").setText((invoice?.CustomerName || "").toString());
+                    form.getTextField("Days").setText((`${invoice?.Days} days at ${invoice?.park_name}` || "").toString());
+                    form.getTextField("ConservationAdultCost").setText((invoice?.ConservationAdultCost || "0").toString());
+                    form.getTextField("ConcessionAdultCost").setText((invoice?.ConcessionAdultCost || "0").toString());
+                    form.getTextField("ConservationChildrenCost").setText((invoice?.ConservationChildrenCost || "0").toString());
+                    form.getTextField("ConcessionChildrenCost").setText((invoice?.ConcessionChildrenCost || "0").toString());
+                    form.getTextField("ConservationAdultCount").setText((invoice?.ConservationAdultCount || "0").toString());
+                    form.getTextField("ConcessionAdultCount").setText((invoice?.ConcessionAdultCount || "0").toString());
+                    form.getTextField("ConservationChildrenCount").setText((invoice?.ConservationChildrenCount || "0").toString());
+                    form.getTextField("ConcessionChildrenCount").setText((invoice?.ConcessionChildrenCount || "0").toString());
+                    form.getTextField("ConservationTotal").setText((invoice?.ConservationTotal || "0").toString());
+                    form.getTextField("ConcessionTotal").setText((invoice?.ConcessionTotal || "0").toString());
+                    form.getTextField("HotelTotal").setText((invoice?.HotelTotal || "0").toString());
+                    form.getTextField("CarHireTotal").setText((invoice?.CarHire || "0").toString());
+                    form.getTextField("FlightTotal").setText((invoice?.Flight || '0').toString());
+                    form.getTextField("ExtrasTotal").setText((invoice?.Extras || '0').toString());
+                    // form.getTextField("AbsoluteTotal").setText((invoice?.invoice_amount || "0").toString());
+                    // form.getTextField("B_Due").setText((invoice?.invoice_amount || "0").toString());
+                    // form.getTextField("B_Remaining").setText((invoice?.invoice_amount || "0").toString());
+                    form.getTextField("Customer Name 2").setText((invoice?.CustomerName || "").toString());
+                    form.getTextField("ConservationFees").setText(('Conservation fees' || "").toString());
+                    form.getTextField("ConcessionFees").setText(('Concession fees' || "").toString());
+                    form.getTextField("Hotel").setText((invoice?.hotel_name || "Hotel cost").toString());
+                    form.getTextField("CarHire").setText(('Car hire cost' || "").toString());
+                    form.getTextField("Flight").setText(('Flight cost' || "").toString());
+                    form.getTextField("Extra").setText((invoice?.extras_desc || "Extras cost").toString());
+
+                    form.flatten();
+                    const pdfBytes = await pdfDoc.save();
+
+                    function download(data, filename, type) {
+                        const blob = new Blob([data], {
+                            type
+                        });
+                        const link = document.createElement('a');
+                        link.href = URL.createObjectURL(blob);
+                        link.download = filename;
+                        link.click();
+                    }
+
+                    download(pdfBytes, `invoice_${invoice?.CustomerName}.pdf`, "application/pdf");
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+
+            fillPdf(invoice);
+
         };
     </script>
 </body>

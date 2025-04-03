@@ -7,10 +7,10 @@ $pdo = new PDO("sqlite:" . $dbFilePath);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $pdfFile = 'invoice_template.pdf';
+    var_dump($_POST);
     $rawData = $_POST['invoice'];
     $P_DATA = json_decode($rawData, true);
+
 
     $data = [
         'DateIssue' => $P_DATA['DateIssue'] ?? '',
