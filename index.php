@@ -223,7 +223,7 @@
 <body>
     <h1>ODYSSEYS FROM AFRICA</h1>
     <main class="grid-wrapper">
-        <form action="index.php" class="Form" onsubmit="generate_invoice(event)">
+        <!-- <form action="index.php" class="Form" onsubmit="generate_invoice(event)">
             <label for="customer_name">Customer Name:</label>
             <input type="text" class="customer_name" id="customer_name" name="customer_name" required>
 
@@ -306,7 +306,7 @@
             <input type="number" id="invoice-amount" step="0.01" name="invoice_amount">
 
             <button type="submit">Submit</button>
-        </form>
+        </form> -->
         <section class="preview">
             <div class="container">
                 <h2 class="section-title">Cost Details</h2>
@@ -458,9 +458,6 @@
             </div>
         </section>
     </main>
-    <aside class="link">
-        <a href="receipt.php">Generate receipt instead</a>
-    </aside>
     <script src="https://unpkg.com/pdf-lib"></script>
     <script>
         document.getElementById('country').addEventListener('change', function() {
@@ -714,7 +711,7 @@
                 sectionElement.classList.remove('hidden');
             }
         }
-        const generate_invoice = async (e) => {
+        /*const generate_invoice = async (e) => {
             e.preventDefault();
             let StartDate = document.getElementById("start_date").value;
             let EndDate = document.getElementById("end_date").value;
@@ -857,7 +854,6 @@
                 cost_amount: document.querySelector(".total").textContent || 0,
             };
 
-            /* This is for creating invoice in db table, using ajax */
             const xhr = new XMLHttpRequest();
             xhr.open("POST", "invoice_generation.php", true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
@@ -874,7 +870,7 @@
 
             async function fillPdf(invoice) {
                 try {
-                    const url = "./i_temp.pdf";
+                    const url = "./invoice_template.pdf";
                     const existingPdfBytes = await fetch(url).then((res) => res.arrayBuffer());
 
                     const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
@@ -897,9 +893,9 @@
                     form.getTextField("CarHireTotal").setText((invoice?.CarHire || "0").toString());
                     form.getTextField("FlightTotal").setText((invoice?.Flight || '0').toString());
                     form.getTextField("ExtrasTotal").setText((invoice?.Extras || '0').toString());
-                    // form.getTextField("AbsoluteTotal").setText((invoice?.invoice_amount || "0").toString());
-                    // form.getTextField("B_Due").setText((invoice?.invoice_amount || "0").toString());
-                    // form.getTextField("B_Remaining").setText((invoice?.invoice_amount || "0").toString());
+                    form.getTextField("AbsoluteTotal").setText((invoice?.invoice_amount || "0").toString());
+                    form.getTextField("B_Due").setText((invoice?.invoice_amount || "0").toString());
+                    form.getTextField("B_Remaining").setText((invoice?.invoice_amount || "0").toString());
                     form.getTextField("Customer Name 2").setText((invoice?.CustomerName || "").toString());
                     form.getTextField("ConservationFees").setText(('Conservation fees' || "").toString());
                     form.getTextField("ConcessionFees").setText(('Concession fees' || "").toString());
@@ -929,7 +925,7 @@
 
             fillPdf(invoice);
 
-        };
+        };*/
     </script>
 </body>
 

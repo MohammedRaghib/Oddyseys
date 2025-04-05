@@ -1,6 +1,6 @@
 <?php
 
-$dbFilePath = './oddyseys.db';
+$dbFilePath = './travel.db';
 
 try {
     $pdo = new PDO("sqlite:" . $dbFilePath);
@@ -43,6 +43,37 @@ try {
         }
 
         echo $options;
+    }
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        $for = $_GET['for'] ?? '';
+
+        if ($for === 'hotelpage') {
+            $get_parks_query = 'SELECT name FROM park_conservation_fees ORDER BY name ASC';
+            $park_stmt = $pdo->prepare($get_parks_query);
+            $park_stmt->execute();
+            $parks = [];
+            $options = '';
+            while ($park_row = $park_stmt->fetch(PDO::FETCH_ASSOC)) {
+                if (!in_array($park_row['name'], $parks)) {
+                    $options .= '<option value="' . htmlspecialchars($park_row['name']) . '">' . htmlspecialchars($park_row['name']) . '</option>';
+                    array_push($parks, $park_row['name']);
+                }
+            }
+
+            $get_hotels_query = 'SELECT * FROM park_hotels ORDER BY hotel ASC';
+            $hotel_stmt = $pdo->prepare($get_hotels_query);
+            $hotel_stmt->execute();
+
+            $hotels = $hotel_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $response = [
+                'parks' => $parks,
+                'hotels' => $hotels,
+            ];
+
+            header('Content-Type: application/json');
+            echo json_encode($response);
+        }
     }
 } catch (PDOException $e) {
     echo '<option value="">Error: ' . htmlspecialchars($e->getMessage()) . '</option>';
