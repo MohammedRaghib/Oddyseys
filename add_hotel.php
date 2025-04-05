@@ -298,8 +298,7 @@
                     <tr>
                         <th>Name</th>
                         <th>Park</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
+                        <th>Season</th>
                         <th>Rate</th>
                         <th>Action</th>
                     </tr>
@@ -310,8 +309,14 @@
                         <td><select name="park[]" id="park" class="parkSelect" required>
                                 <option value="">-SELECT PARK-</option>
                             </select></td>
-                        <td><input type="date" name="start_date[]" id="start_date" required></td>
-                        <td><input type="date" name="end_date[]" id="end_date" required></td>
+                        <td><select name="season[]" id="season" required>
+                                <option value="">-SELECT SEASON-</option>
+                                <option value="Low">Low season (01/04 - 31/05)</option>
+                                <option value="Mid">Mid season (01/11 - 14/12)</option>
+                                <option value="High1">High season (01/01 - 31/03)</option>
+                                <option value="High2">High season (01/06 - 31/10)</option>
+                                <option value="High3">High season (15/12 - 31/12)</option>
+                            </select></td>
                         <td><input type="number" step="0.01" name="rate[]" id="rate" required></td>
                         <td><button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button></td>
                     </tr>
@@ -326,7 +331,6 @@
             <label for="hotels">Current editing hotel: <b id="currentHotel"></b></label>
             <button class="openForm" onclick="openhotels(true)" type="button">Change</button>
         </div>
-
         <input type="text" name="ID" id="hotel_ID" style="display: none;" required>
 
         <label for="hotel_hotel">Name</label>
@@ -337,11 +341,15 @@
             <option value="">-SELECT PARK-</option>
         </select>
 
-        <label for="hotel_start_date">Start date</label>
-        <input type="date" id="hotel_start_date" name="start_date" required>
-
-        <label for="hotel_end_date">End date</label>
-        <input type="date" id="hotel_end_date" name="end_date" required>
+        <label for="hotel_season">Season</label>
+        <select name="season" id="hotel_season" required>
+            <option value="">-SELECT SEASON-</option>
+            <option value="Low">Low season (01/04 - 31/05)</option>
+            <option value="Mid">Mid season (01/11 - 14/12)</option>
+            <option value="High1">High season (01/01 - 31/03)</option>
+            <option value="High2">High season (01/06 - 31/10)</option>
+            <option value="High3">High season (15/12 - 31/12)</option>
+        </select>
 
         <label for="hotel_rate">Rate</label>
         <input type="text" id="hotel_rate" name="rate" required>
@@ -407,6 +415,35 @@
             xhr.send();
         });
 
+        function getSeasonDateRange(season) {
+            switch (season) {
+                case 'Low':
+                    return {
+                        start: '2000-04-01', end: '2000-05-31'
+                    };
+                case 'Mid':
+                    return {
+                        start: '2000-11-01', end: '2000-12-14'
+                    };
+                case 'High1':
+                    return {
+                        start: '2000-01-01', end: '2000-03-31'
+                    };
+                case 'High2':
+                    return {
+                        start: '2000-06-01', end: '2000-10-31'
+                    };
+                case 'High3':
+                    return {
+                        start: '2000-12-15', end: '2000-12-31'
+                    };
+                default:
+                    return {
+                        start: '', end: ''
+                    };
+            }
+        }
+
         function addEntry() {
             const entry = document.querySelector('.entry');
             const newEntry = entry.cloneNode(true);
@@ -436,6 +473,7 @@
 
         const updateForm = (e, id) => {
             let list = document.querySelector('.ListOfHotels');
+
             let data = {
                 ID: id,
                 hotel: document.querySelector(`.hotel${id} .hotel_name`).textContent || '',
@@ -443,19 +481,39 @@
                 start_date: document.querySelector(`.hotel${id} .hotel_start_date`).textContent || '',
                 end_date: document.querySelector(`.hotel${id} .hotel_end_date`).textContent || '',
                 rate: parseFloat(document.querySelector(`.hotel${id} .hotel_rate`).textContent) || 0,
+            };
+
+            const startDate = data.start_date;
+            const endDate = data.end_date;
+            const seasonSelect = document.getElementById('hotel_season');
+
+            if (startDate === '2000-04-01' && endDate === '2000-05-31') {
+                seasonSelect.value = 'Low';
+            } else if (startDate === '2000-11-01' && endDate === '2000-12-14') {
+                seasonSelect.value = 'Mid';
+            } else if (startDate === '2000-01-01' && endDate === '2000-03-31') {
+                seasonSelect.value = 'High1';
+            } else if (startDate === '2000-06-01' && endDate === '2000-10-31') {
+                seasonSelect.value = 'High2';
+            } else if (startDate === '2000-12-15' && endDate === '2000-12-31') {
+                seasonSelect.value = 'High3';
             }
-            // console.log(data)
+
             Object.keys(data).forEach((field) => {
                 let text = data[field];
-                if (text) {
+                if (text && field !== 'start_date' && field !== 'end_date') {
                     let input = document.getElementById(`hotel_${field}`);
-                    input.value = data[field];
+                    if (input) {
+                        input.value = data[field];
+                    }
                 }
-            })
+            });
+
             let current = document.getElementById('currentHotel');
             current.textContent = data['hotel'];
-            list.style.display = 'none'
-        }
+            list.style.display = 'none';
+        };
+
         const searchHotels = (event) => {
             let searchValue = event.target.value.toLowerCase();
             let hotelItems = document.querySelectorAll('.HotelList .indiviualHotel');
@@ -469,10 +527,22 @@
                 }
             });
         };
+
         const handleSubmit = async (e) => {
             e.preventDefault();
             try {
-                const formData = new FormData(document.querySelector('.add_hotel_form'))
+                const formData = new FormData(document.querySelector('.add_hotel_form'));
+                const seasonElements = document.querySelectorAll('select[name="season[]"]');
+                seasonElements.forEach((select, index) => {
+                    const season = select.value;
+                    const {
+                        start,
+                        end
+                    } = getSeasonDateRange(season);
+                    formData.append(`start_date[${index}]`, start);
+                    formData.append(`end_date[${index}]`, end);
+                });
+
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'posting_data.php', true);
                 xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
@@ -501,8 +571,13 @@
 
             let form = document.querySelector('.modifying');
             let formData = new FormData(form);
-
-            
+            const season = formData.get('season');
+            const {
+                start,
+                end
+            } = getSeasonDateRange(season);
+            formData.set('start_date', start);
+            formData.set('end_date', end);
 
             try {
                 const xhr = new XMLHttpRequest();
