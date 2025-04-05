@@ -1,7 +1,11 @@
 <?php
 
-$dbFilePath = './travel.db';
-$pdo = new PDO("sqlite:" . $dbFilePath);
+$dbHost = 'localhost';
+$dbName = 'angeligh_huss';
+$dbUser = 'husszain$2024';
+$dbPass = 'angeligh_new';
+
+$pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_POST['action'] === 'add_hotel') {

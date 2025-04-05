@@ -1,9 +1,12 @@
 <?php
 
-$dbFilePath = './travel.db';
+$dbHost = 'localhost';
+$dbName = 'angeligh_huss'; 
+$dbUser = 'husszain$2024'; 
+$dbPass = 'angeligh_new';
 
 try {
-    $pdo = new PDO("sqlite:" . $dbFilePath);
+    $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if (isset($_POST['country']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -24,6 +27,7 @@ try {
 
         echo $options;
     }
+
     if (isset($_POST['park']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $selectedPark = $_POST['park'];
 
@@ -44,6 +48,7 @@ try {
 
         echo $options;
     }
+
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $for = $_GET['for'] ?? '';
 
