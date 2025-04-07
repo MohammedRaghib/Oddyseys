@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/pdf-lib"></script>
     <title>Choose</title>
-    <style>
+    <!-- <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -217,7 +217,7 @@
             padding: 10px;
             border-radius: 10px;
         }
-    </style>
+    </style> -->
 </head>
 
 <body>
@@ -307,6 +307,11 @@
 
             <button type="submit">Submit</button>
         </form> -->
+        <section class="info">
+    <table>
+
+    </table>
+        </section>
         <section class="preview">
             <div class="container">
                 <h2 class="section-title">Cost Details</h2>

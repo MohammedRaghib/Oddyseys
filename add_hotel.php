@@ -328,7 +328,7 @@
     </main>
     <form class="modifying" onsubmit="updateHotel(event)">
         <div class="changeHotel">
-            <label for="hotels">Current editing hotel: <b id="currentHotel"></b></label>
+            <label for="currentHotel">Current editing hotel: <b id="currentHotel"></b></label>
             <button class="openForm" onclick="openhotels(true)" type="button">Change</button>
         </div>
         <input type="text" name="ID" id="hotel_ID" style="display: none;" required>
@@ -366,7 +366,7 @@
     <script>
         const intial_load = document.addEventListener('DOMContentLoaded', function() {
             let parksSelects = document.querySelectorAll('.parkSelect');
-            let hotelSelect = document.getElementById('hotels');
+            let hotelSelect = document.querySelector('.HotelList');
 
             let xhr = new XMLHttpRequest();
             xhr.open('GET', 'get_parks.php?for=hotelpage', true);
@@ -404,13 +404,16 @@
                     });
 
                 } else {
-                    parksSelect.innerHTML = '<option value="">Error loading parks.</option>';
-                    hotelSelect.innerHTML = '<option value="">Error loading hotels.</option>';
+                    parksSelects.innerHTML = '<option value="">Error loading parks.</option>';
+                    hotelSelect.innerHTML = '<p>Error loading hotels.</p>';
                 }
             };
             xhr.onerror = function() {
-                parksSelect.innerHTML = '<option value="">Error loading parks.</option>';
-                hotelSelect.innerHTML = '<option value="">Error loading hotels.</option>';
+                console.error('Error bish')
+                parksSelects.forEach((select) => {
+                    select.innerHTML = '<option value="">Error loading parks.</option>';
+                });
+                hotelSelect.innerHTML = '<p>Error loading hotels.</p>';
             };
             xhr.send();
         });

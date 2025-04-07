@@ -5,8 +5,8 @@
 //
 // Parameters:
 // 1. PF : Park conservation fees - changes according to type of person (citizen or not) and age. Calculated per day per person.
-// 2. HC : Hotel concession fees - changes according to type of person (citizen or not) and age. Calculated per day per person.
-// 3. AC : Accommodation - i.e hotel charges. Calculated per day for the whole group.
+// 2. HC : Hotel concession fees - changes according to type of person (citizen or not) and age. Calculated per night per person.
+// 3. AC : Accommodation - i.e hotel charges. Calculated per night for the whole group.
 // 4. CH : Car hire - changes by season. Calculated per day per person.
 // 5. DU : Duration - number of days (end date minus start date)
 // 6. EX : Extras - one blanket amount applicable over all pax and days

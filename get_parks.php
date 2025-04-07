@@ -1,9 +1,9 @@
 <?php
 
 $dbHost = 'localhost';
-$dbName = 'angeligh_huss'; 
-$dbUser = 'husszain$2024'; 
-$dbPass = 'angeligh_new';
+$dbName = 'angeligh_new'; 
+$dbUser = 'angeligh_huss'; 
+$dbPass = 'husszain$2024';
 
 try {
     $pdo = new PDO("mysql:host=$dbHost;dbname=$dbName;charset=utf8mb4", $dbUser, $dbPass);
@@ -81,5 +81,11 @@ try {
         }
     }
 } catch (PDOException $e) {
-    echo '<option value="">Error: ' . htmlspecialchars($e->getMessage()) . '</option>';
+    $error = 'Error: ' . htmlspecialchars($e->getMessage());
+    $response = [
+        'parks' => [$error],
+        'hotels' => [],
+    ];
+    http_response_code(505);
+    echo json_encode($response);
 }
