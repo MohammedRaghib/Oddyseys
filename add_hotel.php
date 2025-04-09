@@ -199,7 +199,7 @@
 
 
             <label for="hotel_country">Country</label>
-            <select name="country" class="select" id="hotel_country" onchange="filter(event.target.value)" required>
+            <select name="country" class="select" id="hotel_country" onchange="filter(event.target.value)">
                 <option value="">-SELECT COUNTRY-</option>
                 <option value="kenya">Kenya</option>
                 <option value="tanzania">Tanzania</option>
@@ -378,6 +378,11 @@
             let countryLabel = document.getElementById('hotel_country').previousElementSibling;
             let parkLabel = document.getElementById('hotel_park').previousElementSibling;
 
+            let options = document.querySelectorAll('.parkOption');
+            options.forEach((option) => {
+                option.style.display = 'block';
+            });
+
             parkLabel.style.display = 'none';
             parkSelect.style.display = 'none';
 
@@ -466,6 +471,11 @@
 
         const updateForm = async (e, id) => {
             let list = document.querySelector('.ListOfHotels');
+            let options = document.querySelectorAll('.parkOption');
+            options.forEach((option) => {
+                option.style.display = 'block';
+            });
+
             let xhr = new XMLHttpRequest();
 
             xhr.open('GET', `get_parks.php?for=hotel_info&id=${id}`, true);
@@ -557,20 +567,25 @@
 
         const handleSubmit = async (e) => {
             e.preventDefault();
-
-            if (editing) {
+            if(editing){
                 updateHotel(e);
                 return;
             }
 
             try {
-                const formData = new FormData(document.querySelector('.add_hotel_form'));
+                const form = document.querySelector('.add_hotel_form');
+                const formData = new FormData(form);
 
+                const hotel = {
+                    name: formData.get('hotel'),
+                    park: formData.get('park'),
+                };
+
+                const seasons = [];
                 const seasonRows = document.querySelectorAll('#dynamic-entries tbody .entry');
-                seasonRows.forEach((row, index) => {
+                seasonRows.forEach((row) => {
                     const seasonSelect = row.querySelector('select[name="season[]"]');
                     const rateInput = row.querySelector('input[name="rate[]"]');
-
                     const season = seasonSelect.value;
                     const rate = rateInput.value;
 
@@ -579,21 +594,32 @@
                         end
                     } = getSeasonDateRange(season);
 
-                    formData.append(`seasons[${index}][season]`, season);
-                    formData.append(`seasons[${index}][start_date]`, start);
-                    formData.append(`seasons[${index}][end_date]`, end);
-                    formData.append(`seasons[${index}][rate]`, rate);
+                    const seasonObject = {
+                        season: season,
+                        start_date: start,
+                        end_date: end,
+                        rate: rate,
+                    };
+
+                    seasons.push(seasonObject);
                 });
 
-                formData.append("action", "add_hotel");
+                const payload = {
+                    hotel: hotel,
+                    seasons: seasons,
+                    action: 'add_hotel',
+                };
+
+                console.log(payload);
 
                 const xhr = new XMLHttpRequest();
                 xhr.open('POST', 'posting_data.php?action=add_hotel', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
 
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 400) {
                         const response = JSON.parse(xhr.responseText);
-                        console.log(response.message);
+                        console.log('Server Response:', response.message);
                         alert('Hotel added successfully!');
                         change();
                     } else {
@@ -602,13 +628,15 @@
                 };
 
                 xhr.onerror = function() {
-                    alert('An error occurred while submitting the hotel.');
+                    alert('An error occurred while adding the hotel.');
                 };
 
-                xhr.send(new URLSearchParams(formData).toString());
+                xhr.send(JSON.stringify(payload));
             } catch (error) {
-                console.error("Error:", error);
+                console.error('Error:', error);
                 alert('Failed to add hotel.');
+            } finally{
+                editing = false;
             }
         };
 
@@ -681,6 +709,7 @@
                 console.error('Error:', error);
                 alert('Failed to update hotel.');
             }
+            editing = false;
         };
     </script>
 </body>
