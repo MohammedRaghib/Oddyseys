@@ -443,7 +443,17 @@
                     const form = document.querySelector('.add_hotel_form');
                     document.getElementById('hotel_ID').value = id;
                     document.getElementById('hotel_hotel').value = document.querySelector(`.hotel${id} .hotel_name`).textContent || '';
-                    document.getElementById('hotel_park').value = hotelInfo.parkID;
+                    const parkSelect = document.getElementById('hotel_park');
+                    const parklabel = document.getElementById('hotel_park').previousElementSibling;
+                    parkSelect.value = hotelInfo.parkID;
+                    parkSelect.style.display = 'block';
+                    parklabel.style.display = 'block';
+
+                    const countrySelect = document.getElementById('hotel_country');
+                    const countryLabel = document.getElementById('hotel_country').previousElementSibling;
+                    countrySelect.removeAttribute('required');
+                    countrySelect.style.display = 'none';
+                    countryLabel.style.display = 'none';
 
                     const tbody = document.querySelector('#dynamic-entries tbody');
                     tbody.innerHTML = '';
@@ -452,11 +462,10 @@
                         const season = range.start_date && range.end_date ?
                             getSeasonFromRange(range.start_date, range.end_date) :
                             '';
-
                         const newRow = `
                             <tr class="entry">
                                 <td>
-                                    <select name="season[]" class="select" required>
+                                    <select name="season[]" class="select" data-id='${range.id}' required>
                                         <option value="">-SELECT SEASON-</option>
                                         <option value="Low" ${season === 'Low' ? 'selected' : ''}>Low season (01/04 - 31/05)</option>
                                         <option value="Mid" ${season === 'Mid' ? 'selected' : ''}>Mid season (01/11 - 14/12)</option>
@@ -544,7 +553,7 @@
                 formData.append("action", "add_hotel");
 
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'posting_data.php', true);
+                xhr.open('POST', 'posting_data.php?action=add_hotel', true);
 
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 400) {
@@ -572,13 +581,20 @@
             e.preventDefault();
 
             try {
-                const formData = new FormData(document.querySelector('.add_hotel_form'));
+                const form = document.querySelector('.add_hotel_form');
+                const formData = new FormData(form);
 
+                const hotel = {
+                    ID: formData.get('ID'),
+                    name: formData.get('hotel'),
+                    park: formData.get('park'),
+                };
+
+                const seasons = [];
                 const seasonRows = document.querySelectorAll('#dynamic-entries tbody .entry');
-                seasonRows.forEach((row, index) => {
+                seasonRows.forEach((row) => {
                     const seasonSelect = row.querySelector('select[name="season[]"]');
                     const rateInput = row.querySelector('input[name="rate[]"]');
-
                     const season = seasonSelect.value;
                     const rate = rateInput.value;
 
@@ -587,24 +603,35 @@
                         end
                     } = getSeasonDateRange(season);
 
-                    formData.append(`seasons[${index}][season]`, season);
-                    formData.append(`seasons[${index}][start_date]`, start);
-                    formData.append(`seasons[${index}][end_date]`, end);
-                    formData.append(`seasons[${index}][rate]`, rate);
+                    const seasonObject = {
+                        season: season,
+                        start_date: start,
+                        end_date: end,
+                        rate: rate,
+                        id: seasonSelect.dataset.id || null,
+                    };
+                    
+                    seasons.push(seasonObject);
                 });
 
-                formData.append("action", "update_hotel");
+                const payload = {
+                    hotel: hotel,
+                    seasons: seasons,
+                    action: 'update_hotel',
+                };
+
+                console.log(payload);
 
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'posting_data.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.open('POST', 'posting_data.php?action=update_hotel', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
 
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 400) {
                         const response = JSON.parse(xhr.responseText);
-                        console.log("Server Response:", response.message);
+                        console.log('Server Response:', response.message);
                         alert('Hotel updated successfully!');
-                        change();
+                        change(); // Reset the form
                     } else {
                         alert('Failed to update hotel.');
                     }
@@ -614,9 +641,9 @@
                     alert('An error occurred while updating the hotel.');
                 };
 
-                xhr.send(new URLSearchParams(formData).toString());
+                xhr.send(JSON.stringify(payload));
             } catch (error) {
-                console.error("Error:", error);
+                console.error('Error:', error);
                 alert('Failed to update hotel.');
             }
         };
