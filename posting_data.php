@@ -22,6 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function handleAddHotel($pdo, $postData)
 {
+    $input = file_get_contents('php://input');
+    $postData = json_decode($input, true);
     $hotels = $postData['hotel'] ?? [];
     $seasons = $postData['seasons'] ?? [];
 

@@ -173,6 +173,11 @@
             align-items: center;
             flex-direction: column;
         }
+
+        .changeHotel {
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 
@@ -182,8 +187,10 @@
         <form class="add_hotel_form" name="add_hotel_form" onsubmit="handleSubmit(event)">
             <div class="changeHotel">
                 <span>Current editing hotel: <b id="currentHotel"></b></span>
-                <button class="openForm" onclick="openhotels(true)" type="button">Change</button>
-                <button class="clearForm" onclick="change()" type="button">Clear Form</button>
+                <div class="changeHotel-btns">
+                    <button class="openForm" onclick="openhotels(true)" type="button">Load Existing Hotel</button>
+                    <button class="clearForm" onclick="change()" type="button">Clear Form</button>
+                </div>
             </div>
             <input type="text" name="ID" id="hotel_ID" style="display: none;" class="input">
 
@@ -365,6 +372,31 @@
 
         let editing = false;
         const change = () => {
+            let countrySelect = document.getElementById('hotel_country');
+            let parkSelect = document.getElementById('hotel_park');
+            let tbody = document.querySelector('#dynamic-entries tbody');
+            let countryLabel = document.getElementById('hotel_country').previousElementSibling;
+            let parkLabel = document.getElementById('hotel_park').previousElementSibling;
+
+            parkLabel.style.display = 'none';
+            parkSelect.style.display = 'none';
+
+            countryLabel.style.display = 'block';
+            countrySelect.style.display = 'block';
+
+            tbody.innerHTML = `
+                    <tr class="entry">
+                        <td><select name="season[]" id="hotel_season" class="select" required>
+                                <option value="">-SELECT SEASON-</option>
+                                <option value="Low">Low season (01/04 - 31/05)</option>
+                                <option value="Mid">Mid season (01/11 - 14/12)</option>
+                                <option value="High1">High season (01/01 - 31/03)</option>
+                                <option value="High2">High season (01/06 - 31/10)</option>
+                                <option value="High3">High season (15/12 - 31/12)</option>
+                            </select></td>
+                        <td><input type="number" step="0.01" name="rate[]" id="hotel_rate" class="input" required></td>
+                        <td><button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button></td>
+                    </tr>`
             const form = document.querySelector('.add_hotel_form');
             form.reset();
             editing = false;
@@ -406,7 +438,10 @@
             const entry = document.querySelector('.entry');
             const newEntry = entry.cloneNode(true);
             const inputs = newEntry.querySelectorAll('input, select');
-            inputs.forEach(input => input.value = '');
+            inputs.forEach(input => {
+                input.value = '';
+                delete input.dataset.id;
+            });
             document.querySelector('#dynamic-entries tbody').appendChild(newEntry);
         }
 
@@ -610,7 +645,7 @@
                         rate: rate,
                         id: seasonSelect.dataset.id || null,
                     };
-                    
+
                     seasons.push(seasonObject);
                 });
 
