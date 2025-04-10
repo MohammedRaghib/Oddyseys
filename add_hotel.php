@@ -567,7 +567,7 @@
 
         const handleSubmit = async (e) => {
             e.preventDefault();
-            if(editing){
+            if (editing) {
                 updateHotel(e);
                 return;
             }
@@ -635,7 +635,7 @@
             } catch (error) {
                 console.error('Error:', error);
                 alert('Failed to add hotel.');
-            } finally{
+            } finally {
                 editing = false;
             }
         };

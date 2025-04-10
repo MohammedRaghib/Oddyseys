@@ -6,23 +6,6 @@ try {
     $pdo = new PDO("sqlite:" . $dbFilePath);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    header('Content-Type: application/json');
-
-    if (isset($_POST['country']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $selectedCountry = $_POST['country'];
-
-        $get_parks_query = 'SELECT parks.name FROM parks WHERE country = :country';
-        $park_stmt = $pdo->prepare($get_parks_query);
-        $park_stmt->execute([':country' => $selectedCountry]);
-
-        $parks = [];
-        while ($park_row = $park_stmt->fetch(PDO::FETCH_ASSOC)) {
-            $parks[] = ['name' => htmlspecialchars($park_row['name'])];
-        }
-
-        echo json_encode(['status' => 'success', 'parks' => $parks]);
-    }
-
     if (isset($_POST['park']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $selectedPark = $_POST['park'];
 
