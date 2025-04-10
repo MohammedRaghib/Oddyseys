@@ -5,134 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Hotel</title>
-    <!-- <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #4caf50, #81c784);
-            color: #333;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-        }
-
-        .adding {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        form {
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            max-width: 800px;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            background: #fff;
-            border-radius: 5px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        th,
-        td {
-            text-align: left;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-
-        th {
-            background: #4caf50;
-            color: white;
-            font-weight: bold;
-            text-transform: uppercase;
-        }
-
-        tr:nth-child(even) {
-            background: #f9f9f9;
-        }
-
-        tr:hover {
-            background: #f1f1f1;
-        }
-
-        td input,
-        td select {
-            width: 80%;
-            padding: 8px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            transition: border-color 0.3s ease;
-        }
-
-        td input:focus,
-        td select:focus {
-            outline: none;
-            border-color: #4caf50;
-            box-shadow: 0px 0px 5px rgba(76, 175, 80, 0.5);
-        }
-
-        button {
-            background: #ff9800;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            margin: 5px;
-        }
-
-        button:hover {
-            background: #e65100;
-        }
-
-        .cancel-btn:hover {
-            background-color: #b71c1c;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .add-entry {
-            width: 100%;
-            background: #4caf50;
-            margin-top: 10px;
-        }
-
-        .add-entry:hover {
-            background: #388e3c;
-        }
-
-        .submit-hotel {
-            width: 100%;
-            background: #00796b;
-        }
-
-        .submit-hotel:hover {
-            background: #004d40;
-        }
-
-        .remove-entry {
-            width: auto;
-            background: #d32f2f;
-        }
-
-        .remove-entry:hover {
-            background: #b71c1c;
-        }
-    </style> -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -154,6 +26,12 @@
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .add_hotel_form {
+            display: flex;
+            flex-direction: column;
+            justify-content: left;
         }
 
         h1,
@@ -203,6 +81,11 @@
             font-size: 1rem;
             font-weight: bold;
             transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .small-btn {
+            width: 20%;
+            margin: 15px;
         }
 
         button:hover {
@@ -262,6 +145,10 @@
             transition: background 0.3s ease, transform 0.2s ease;
         }
 
+        .parkOption {
+            display: none;
+        }
+
         .indiviualHotel:hover {
             background: #e0f7f7;
             transform: scale(1.02);
@@ -286,6 +173,11 @@
             align-items: center;
             flex-direction: column;
         }
+
+        .changeHotel {
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 
@@ -293,11 +185,34 @@
     <main class="adding">
         <h1>Season Hotels Rates</h1>
         <form class="add_hotel_form" name="add_hotel_form" onsubmit="handleSubmit(event)">
+            <div class="changeHotel">
+                <span>Current editing hotel: <b id="currentHotel"></b></span>
+                <div class="changeHotel-btns">
+                    <button class="openForm" onclick="openhotels(true)" type="button">Load Existing Hotel</button>
+                    <button class="clearForm" onclick="change()" type="button">Clear Form</button>
+                </div>
+            </div>
+            <input type="text" name="ID" id="hotel_ID" style="display: none;" class="input">
+
+            <label for="hotel_hotel">Name</label>
+            <input type="text" name="hotel" id="hotel_hotel" class="input" required>
+
+
+            <label for="hotel_country">Country</label>
+            <select name="country" class="select" id="hotel_country" onchange="filter(event.target.value)">
+                <option value="">-SELECT COUNTRY-</option>
+                <option value="kenya">Kenya</option>
+                <option value="tanzania">Tanzania</option>
+            </select>
+
+            <label for="hotel_park" style="display: none;">Park</label>
+            <select name="park" class="parkSelect select" id="hotel_park" style="display: none;" required>
+                <option value="">-SELECT PARK-</option>
+            </select>
+
             <table id="dynamic-entries" style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr>
-                        <th>Name</th>
-                        <th>Park</th>
                         <th>Season</th>
                         <th>Rate</th>
                         <th>Action</th>
@@ -305,11 +220,7 @@
                 </thead>
                 <tbody>
                     <tr class="entry">
-                        <td><input type="text" name="hotel[]" id="hotel" required></td>
-                        <td><select name="park[]" id="park" class="parkSelect" required>
-                                <option value="">-SELECT PARK-</option>
-                            </select></td>
-                        <td><select name="season[]" id="season" required>
+                        <td><select name="season[]" id="hotel_season" class="select" required>
                                 <option value="">-SELECT SEASON-</option>
                                 <option value="Low">Low season (01/04 - 31/05)</option>
                                 <option value="Mid">Mid season (01/11 - 14/12)</option>
@@ -317,53 +228,28 @@
                                 <option value="High2">High season (01/06 - 31/10)</option>
                                 <option value="High3">High season (15/12 - 31/12)</option>
                             </select></td>
-                        <td><input type="number" step="0.01" name="rate[]" id="rate" required></td>
+                        <td><input type="number" step="0.01" name="rate[]" id="hotel_rate" class="input" required></td>
                         <td><button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button></td>
                     </tr>
                 </tbody>
             </table>
-            <button type="button" onclick="addEntry()" class="add-entry">Add Row</button>
-            <button type="submit" class="submit-hotel">Submit</button>
+            <div class="Actionbuttons">
+                <button type="button" onclick="addEntry()" class="small-btn">Add Row</button>
+                <button type="submit" class="small-btn">Submit</button>
+            </div>
         </form>
     </main>
-    <form class="modifying" onsubmit="updateHotel(event)">
-        <div class="changeHotel">
-            <label for="currentHotel">Current editing hotel: <b id="currentHotel"></b></label>
-            <button class="openForm" onclick="openhotels(true)" type="button">Change</button>
-        </div>
-        <input type="text" name="ID" id="hotel_ID" style="display: none;" required>
 
-        <label for="hotel_hotel">Name</label>
-        <input type="text" name="hotel" id="hotel_hotel" required>
-
-        <label for="parkSelect">Park</label>
-        <select name="park" class="parkSelect" id="hotel_park" required>
-            <option value="">-SELECT PARK-</option>
-        </select>
-
-        <label for="hotel_season">Season</label>
-        <select name="season" id="hotel_season" required>
-            <option value="">-SELECT SEASON-</option>
-            <option value="Low">Low season (01/04 - 31/05)</option>
-            <option value="Mid">Mid season (01/11 - 14/12)</option>
-            <option value="High1">High season (01/01 - 31/03)</option>
-            <option value="High2">High season (01/06 - 31/10)</option>
-            <option value="High3">High season (15/12 - 31/12)</option>
-        </select>
-
-        <label for="hotel_rate">Rate</label>
-        <input type="text" id="hotel_rate" name="rate" required>
-
-        <button type="submit">Save Hotel</button>
-    </form>
     <aside class="ListOfHotels">
         <h2>All Hotels</h2>
         <button onclick="openhotels(false)" class="cancel-btn">❌</button>
-        <input type="text" class="search-bar" oninput="searchHotels(event)" placeholder="Search hotels">
+        <input type="text" class="search-bar" id='search-bar' oninput="searchHotels(event)" placeholder="Search hotels">
         <div class="HotelList">
         </div>
     </aside>
     <script>
+        let all_parks = {};
+
         const intial_load = document.addEventListener('DOMContentLoaded', function() {
             let parksSelects = document.querySelectorAll('.parkSelect');
             let hotelSelect = document.querySelector('.HotelList');
@@ -375,11 +261,16 @@
             xhr.onload = function() {
                 if (this.status >= 200 && this.status < 400) {
                     const response = JSON.parse(xhr.responseText);
+
+                    all_parks = response.parks;
+
                     response.parks.forEach((park) => {
                         parksSelects.forEach((select) => {
                             let option = document.createElement('option');
-                            option.value = park;
-                            option.textContent = park;
+                            option.value = park.id;
+                            option.classList.add('parkOption');
+                            option.classList.add(park.country);
+                            option.textContent = park.name;
                             select.appendChild(option);
                         });
                     });
@@ -389,14 +280,6 @@
                         div.innerHTML = `
                         <div onclick='updateForm(event, ${hotel.id})'>
                             <span class='hotel_name'>${hotel.hotel || 'No hotel found'}</span>
-                            <br>
-                            <span class='hotel_start_date'>${hotel?.start_date}</span>
-                            <br>
-                            <span class='hotel_end_date'>${hotel?.end_date}</span>
-                            <br>
-                            <span class='hotel_park'>${hotel?.park}</span>
-                            <br>
-                            <span class='hotel_rate'>${hotel?.rate}</span>
                         </div>`
                         div.classList.add('indiviualHotel');
                         div.classList.add(`hotel${hotel.id}`);
@@ -447,11 +330,123 @@
             }
         }
 
+        function getSeasonFromRange(startDate, endDate) {
+            const formattedStartDate = `2000-${startDate.slice(5)}`;
+            const formattedEndDate = `2000-${endDate.slice(5)}`;
+
+            const seasons = [{
+                    season: 'Low',
+                    start: '2000-04-01',
+                    end: '2000-05-31'
+                },
+                {
+                    season: 'Mid',
+                    start: '2000-11-01',
+                    end: '2000-12-14'
+                },
+                {
+                    season: 'High1',
+                    start: '2000-01-01',
+                    end: '2000-03-31'
+                },
+                {
+                    season: 'High2',
+                    start: '2000-06-01',
+                    end: '2000-10-31'
+                },
+                {
+                    season: 'High3',
+                    start: '2000-12-15',
+                    end: '2000-12-31'
+                }
+            ];
+
+            for (const s of seasons) {
+                if (formattedStartDate === s.start && formattedEndDate === s.end) {
+                    return s.season;
+                }
+            }
+
+            return '';
+        }
+
+        let editing = false;
+        const change = () => {
+            let countrySelect = document.getElementById('hotel_country');
+            let parkSelect = document.getElementById('hotel_park');
+            let tbody = document.querySelector('#dynamic-entries tbody');
+            let countryLabel = document.getElementById('hotel_country').previousElementSibling;
+            let parkLabel = document.getElementById('hotel_park').previousElementSibling;
+
+            let options = document.querySelectorAll('.parkOption');
+            options.forEach((option) => {
+                option.style.display = 'block';
+            });
+
+            parkLabel.style.display = 'none';
+            parkSelect.style.display = 'none';
+
+            countryLabel.style.display = 'block';
+            countrySelect.style.display = 'block';
+
+            tbody.innerHTML = `
+                    <tr class="entry">
+                        <td><select name="season[]" id="hotel_season" class="select" required>
+                                <option value="">-SELECT SEASON-</option>
+                                <option value="Low">Low season (01/04 - 31/05)</option>
+                                <option value="Mid">Mid season (01/11 - 14/12)</option>
+                                <option value="High1">High season (01/01 - 31/03)</option>
+                                <option value="High2">High season (01/06 - 31/10)</option>
+                                <option value="High3">High season (15/12 - 31/12)</option>
+                            </select></td>
+                        <td><input type="number" step="0.01" name="rate[]" id="hotel_rate" class="input" required></td>
+                        <td><button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button></td>
+                    </tr>`
+            const form = document.querySelector('.add_hotel_form');
+            form.reset();
+            editing = false;
+            let id_field = document.getElementById('hotel_ID');
+            let current = document.getElementById('currentHotel');
+            current.textContent = '';
+            id_field.removeAttribute('required');
+        };
+
+        const filter = (selected) => {
+            let parkSelect = document.querySelector('.parkSelect');
+            let parkLabel = document.querySelector('.parkSelect').previousElementSibling;
+            let countrySelect = document.getElementById('hotel_country');
+
+            if (selected) {
+                parkSelect.value = '';
+                let Alloptions = document.querySelectorAll(`.parkOption`);
+                Alloptions.forEach((option) => {
+                    option.style.display = 'none';
+                });
+                let options = document.querySelectorAll(`.${selected}`);
+                options.forEach((option) => {
+                    option.style.display = 'block';
+                });
+                parkLabel.style.display = 'inline-block';
+                parkSelect.style.display = 'block';
+            } else {
+                parkSelect.style.display = 'none';
+                parkLabel.style.display = 'none';
+                parkSelect.value = '';
+                let options = document.querySelectorAll(`.parkOption`);
+                options.forEach((option) => {
+                    option.style.display = 'none';
+                });
+            }
+        };
+
         function addEntry() {
             const entry = document.querySelector('.entry');
             const newEntry = entry.cloneNode(true);
             const inputs = newEntry.querySelectorAll('input, select');
-            inputs.forEach(input => input.value = '');
+            inputs.forEach(input => {
+                input.value = '';
+                delete input.dataset.id;
+            });
             document.querySelector('#dynamic-entries tbody').appendChild(newEntry);
         }
 
@@ -463,7 +458,7 @@
             } else {
                 alert('At least one row must remain!');
             }
-        }
+        };
 
         const openhotels = (show) => {
             let List = document.querySelector('.ListOfHotels');
@@ -472,49 +467,88 @@
             } else {
                 List.style.display = 'none';
             }
-        }
+        };
 
-        const updateForm = (e, id) => {
+        const updateForm = async (e, id) => {
             let list = document.querySelector('.ListOfHotels');
-
-            let data = {
-                ID: id,
-                hotel: document.querySelector(`.hotel${id} .hotel_name`).textContent || '',
-                park: document.querySelector(`.hotel${id} .hotel_park`).textContent || '',
-                start_date: document.querySelector(`.hotel${id} .hotel_start_date`).textContent || '',
-                end_date: document.querySelector(`.hotel${id} .hotel_end_date`).textContent || '',
-                rate: parseFloat(document.querySelector(`.hotel${id} .hotel_rate`).textContent) || 0,
-            };
-
-            const startDate = data.start_date;
-            const endDate = data.end_date;
-            const seasonSelect = document.getElementById('hotel_season');
-
-            if (startDate === '2000-04-01' && endDate === '2000-05-31') {
-                seasonSelect.value = 'Low';
-            } else if (startDate === '2000-11-01' && endDate === '2000-12-14') {
-                seasonSelect.value = 'Mid';
-            } else if (startDate === '2000-01-01' && endDate === '2000-03-31') {
-                seasonSelect.value = 'High1';
-            } else if (startDate === '2000-06-01' && endDate === '2000-10-31') {
-                seasonSelect.value = 'High2';
-            } else if (startDate === '2000-12-15' && endDate === '2000-12-31') {
-                seasonSelect.value = 'High3';
-            }
-
-            Object.keys(data).forEach((field) => {
-                let text = data[field];
-                if (text && field !== 'start_date' && field !== 'end_date') {
-                    let input = document.getElementById(`hotel_${field}`);
-                    if (input) {
-                        input.value = data[field];
-                    }
-                }
+            let options = document.querySelectorAll('.parkOption');
+            options.forEach((option) => {
+                option.style.display = 'block';
             });
 
-            let current = document.getElementById('currentHotel');
-            current.textContent = data['hotel'];
-            list.style.display = 'none';
+            let xhr = new XMLHttpRequest();
+
+            xhr.open('GET', `get_parks.php?for=hotel_info&id=${id}`, true);
+
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status <= 400) {
+                    const response = JSON.parse(xhr.responseText);
+                    const hotelInfo = response.hotel_info;
+
+                    const form = document.querySelector('.add_hotel_form');
+                    document.getElementById('hotel_ID').value = id;
+                    document.getElementById('hotel_hotel').value = document.querySelector(`.hotel${id} .hotel_name`).textContent || '';
+                    const parkSelect = document.getElementById('hotel_park');
+                    const parklabel = document.getElementById('hotel_park').previousElementSibling;
+                    parkSelect.value = hotelInfo.parkID;
+                    parkSelect.style.display = 'block';
+                    parklabel.style.display = 'block';
+
+                    const countrySelect = document.getElementById('hotel_country');
+                    const countryLabel = document.getElementById('hotel_country').previousElementSibling;
+                    countrySelect.removeAttribute('required');
+                    countrySelect.style.display = 'none';
+                    countryLabel.style.display = 'none';
+
+                    const tbody = document.querySelector('#dynamic-entries tbody');
+                    tbody.innerHTML = '';
+
+                    hotelInfo.ranges.forEach((range) => {
+                        const season = range.start_date && range.end_date ?
+                            getSeasonFromRange(range.start_date, range.end_date) :
+                            '';
+                        const newRow = `
+                            <tr class="entry">
+                                <td>
+                                    <select name="season[]" class="select" data-id='${range.id}' required>
+                                        <option value="">-SELECT SEASON-</option>
+                                        <option value="Low" ${season === 'Low' ? 'selected' : ''}>Low season (01/04 - 31/05)</option>
+                                        <option value="Mid" ${season === 'Mid' ? 'selected' : ''}>Mid season (01/11 - 14/12)</option>
+                                        <option value="High1" ${season === 'High1' ? 'selected' : ''}>High season (01/01 - 31/03)</option>
+                                        <option value="High2" ${season === 'High2' ? 'selected' : ''}>High season (01/06 - 31/10)</option>
+                                        <option value="High3" ${season === 'High3' ? 'selected' : ''}>High season (15/12 - 31/12)</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" step="0.01" name="rate[]" value="${range.rate}" class="input" required>
+                                </td>
+                                <td>
+                                    <button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button>
+                                </td>
+                            </tr>`;
+                        document.querySelector('#dynamic-entries tbody').innerHTML += newRow;
+                    });
+
+                    const current = document.getElementById('currentHotel');
+                    current.textContent = document.querySelector(`.hotel${id} .hotel_name`).textContent || '';
+                    list.style.display = 'none';
+
+                    const idField = document.getElementById('hotel_ID');
+                    idField.setAttribute('required', '');
+
+                    editing = true;
+                } else {
+                    console.error(JSON.parse(xhr.responseText).message || '');
+                    alert('Failed to fetch hotel details.');
+                }
+            };
+
+            xhr.onerror = function() {
+                console.error(JSON.parse(xhr.responseText).message);
+                alert('Failed to fetch hotel details.');
+            };
+
+            xhr.send();
         };
 
         const searchHotels = (event) => {
@@ -533,65 +567,134 @@
 
         const handleSubmit = async (e) => {
             e.preventDefault();
+            if (editing) {
+                updateHotel(e);
+                return;
+            }
+
             try {
-                const formData = new FormData(document.querySelector('.add_hotel_form'));
-                const seasonElements = document.querySelectorAll('select[name="season[]"]');
-                seasonElements.forEach((select, index) => {
-                    const season = select.value;
+                const form = document.querySelector('.add_hotel_form');
+                const formData = new FormData(form);
+
+                const hotel = {
+                    name: formData.get('hotel'),
+                    park: formData.get('park'),
+                };
+
+                const seasons = [];
+                const seasonRows = document.querySelectorAll('#dynamic-entries tbody .entry');
+                seasonRows.forEach((row) => {
+                    const seasonSelect = row.querySelector('select[name="season[]"]');
+                    const rateInput = row.querySelector('input[name="rate[]"]');
+                    const season = seasonSelect.value;
+                    const rate = rateInput.value;
+
                     const {
                         start,
                         end
                     } = getSeasonDateRange(season);
-                    formData.append(`start_date[${index}]`, start);
-                    formData.append(`end_date[${index}]`, end);
+
+                    const seasonObject = {
+                        season: season,
+                        start_date: start,
+                        end_date: end,
+                        rate: rate,
+                    };
+
+                    seasons.push(seasonObject);
                 });
 
+                const payload = {
+                    hotel: hotel,
+                    seasons: seasons,
+                    action: 'add_hotel',
+                };
+
+                console.log(payload);
+
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'posting_data.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.open('POST', 'posting_data.php?action=add_hotel', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 400) {
-                        let response = JSON.parse(xhr.responseText);
-                        console.log(response.message);
-                        alert('Hotels added successfully');
+                        const response = JSON.parse(xhr.responseText);
+                        console.log('Server Response:', response.message);
+                        alert('Hotel added successfully!');
+                        change();
                     } else {
-                        alert('Failed to add hotels');
+                        alert('Failed to add hotel.');
                     }
                 };
+
                 xhr.onerror = function() {
-                    alert('Failed to add hotels');
+                    alert('An error occurred while adding the hotel.');
                 };
-                formData.append("action", "add_hotel");
-                xhr.send(new URLSearchParams(formData).toString());
+
+                xhr.send(JSON.stringify(payload));
             } catch (error) {
-                alert('Failed to add hotels');
-                console.error(error);
+                console.error('Error:', error);
+                alert('Failed to add hotel.');
+            } finally {
+                editing = false;
             }
         };
 
         const updateHotel = async (e) => {
             e.preventDefault();
 
-            let form = document.querySelector('.modifying');
-            let formData = new FormData(form);
-            const season = formData.get('season');
-            const {
-                start,
-                end
-            } = getSeasonDateRange(season);
-            formData.set('start_date', start);
-            formData.set('end_date', end);
-
             try {
+                const form = document.querySelector('.add_hotel_form');
+                const formData = new FormData(form);
+
+                const hotel = {
+                    ID: formData.get('ID'),
+                    name: formData.get('hotel'),
+                    park: formData.get('park'),
+                };
+
+                const seasons = [];
+                const seasonRows = document.querySelectorAll('#dynamic-entries tbody .entry');
+                seasonRows.forEach((row) => {
+                    const seasonSelect = row.querySelector('select[name="season[]"]');
+                    const rateInput = row.querySelector('input[name="rate[]"]');
+                    const season = seasonSelect.value;
+                    const rate = rateInput.value;
+
+                    const {
+                        start,
+                        end
+                    } = getSeasonDateRange(season);
+
+                    const seasonObject = {
+                        season: season,
+                        start_date: start,
+                        end_date: end,
+                        rate: rate,
+                        id: seasonSelect.dataset.id || null,
+                    };
+
+                    seasons.push(seasonObject);
+                });
+
+                const payload = {
+                    hotel: hotel,
+                    seasons: seasons,
+                    action: 'update_hotel',
+                };
+
+                console.log(payload);
+
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', 'posting_data.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                xhr.open('POST', 'posting_data.php?action=update_hotel', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
 
                 xhr.onload = function() {
                     if (xhr.status >= 200 && xhr.status < 400) {
-                        let response = JSON.parse(xhr.responseText);
-                        console.log("Server Response:", response.message);
+                        const response = JSON.parse(xhr.responseText);
+                        console.log('Server Response:', response.message);
                         alert('Hotel updated successfully!');
+                        change(); // Reset the form
                     } else {
                         alert('Failed to update hotel.');
                     }
@@ -601,12 +704,12 @@
                     alert('An error occurred while updating the hotel.');
                 };
 
-                formData.append("action", "update_hotel");
-                xhr.send(new URLSearchParams(formData).toString());
+                xhr.send(JSON.stringify(payload));
             } catch (error) {
-                console.error("Error:", error);
+                console.error('Error:', error);
                 alert('Failed to update hotel.');
             }
+            editing = false;
         };
     </script>
 </body>
