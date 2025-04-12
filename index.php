@@ -512,8 +512,8 @@
 
         const removeRow = (button) => {
             const row = button.closest('tr');
-            const table = row.closest('table');
-            if (table.rows.length > 2) {
+            const table = row.closest('tbody');
+            if (table.rows.length > 1) {
                 row.remove();
             } else {
                 alert('At least one row must remain!');
