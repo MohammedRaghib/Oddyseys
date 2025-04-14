@@ -426,7 +426,6 @@
         };
 
         const openparks = (id, show) => {
-            console.log(id);
             let all_parks = document.querySelector('.all_parks');
             let all_hotels = document.querySelector('.all_hotels');
             let previewSection = document.querySelector('.preview');
@@ -486,7 +485,7 @@
             parkInputField.value = event.target.textContent;
             parkInputField.dataset.id = event.target.dataset.id;
             delete all_parks.dataset.id;
-            
+
             openparks(false);
             postData();
         };
