@@ -103,27 +103,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $parkId]);
         $parkInfo['conservation_fees'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        /* Format of the parkInfo array:
-            [
-                'id' => (int) Park ID,
-                'name' => (string) Park Name,
-                'country' => (string) Country,
-                'conservation_fees' => [
-                    [
-                        'id' => (int) Fee ID,
-                        'park_id' => (int) Park ID,
-                        'visitor_type' => (string) Visitor Type,
-                        'start_date' => (string) Start Date,
-                        'end_date' => (string) End Date,
-                        'currency' => (string) Currency,
-                        'rate' => (float) Rate
-                    ],
-                    ... more fee records
-                ]
-            ] 
-        */
+
+        $hotel = $park['hotel'];
+        $sql = "SELECT * FROM hotel_rates WHERE hotel = :id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $hotel]);
+        $parkInfo['hotel_rates'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         $parksData[] = $parkInfo;
+        /* Format of the parkInfo array: [
+            'id' => (int) Park ID,
+            'name' => (string) Park Name,
+            'country' => (string) Country,
+            'conservation_fees' => [
+                [
+                    'id' => (int) Fee ID,
+                    'park_id' => (int) Park ID,
+                    'visitor_type' => (string) Visitor Type,
+                    'start_date' => (string) Start Date,
+                    'end_date' => (string) End Date,
+                    'currency' => (string) Currency,
+                    'rate' => (float) Rate
+                ],
+            ],
+            'hotel_rates' => [
+                [
+                    'id' => (int) Rate ID,
+                    'hotel' => (int) Hotel ID,
+                    'start_date' => (string) Start Date,
+                    'end_date' => (string) End Date,
+                    'rate' => (float) Rate,
+                ],
+            ],
+        
+        ] */
     }
+
 
     echo json_encode($parksData);
     exit;

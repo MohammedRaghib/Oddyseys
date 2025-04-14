@@ -238,11 +238,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="double"><input type="text" class="park" name="park" disabled required><button class="openParks" onclick="openparks(true)">Select Park</button></td>
+                    <tr data-id="1">
+                        <td class="double"><input type="text" class="park" name="park" disabled required><button class="openParks" onclick="openparks(this.closest('tr').dataset.id, this)">Select Park</button></td>
                         <td><input type="date" class="start_date" name="start_date" required></td>
                         <td><input type="date" class="end_date" name="end_date" required></td>
-                        <td class="double"><input type="text" class="hotel" name="hotel" disabled required><button class="openHotels" onclick="openhotels(true)">Select Hotel</button></td>
+                        <td class="double"><input type="text" class="hotel" name="hotel" disabled required><button class="openHotels" onclick="openhotels(this.closest('tr').dataset.id, true)">Select Hotel</button></td>
                         <td><input type="number" class="car_hire" min=0 name="car_hire" required></td>
                         <td><button class="remove-row" onclick="removeRow(this)">Remove</button></td>
                     </tr>
@@ -305,7 +305,7 @@
     </main>
 
     <aside class="all_parks" style="display: none;">
-        <button class="hideParks close" onclick="openparks(false)">❌</button>
+        <button class="hideParks close" onclick="openparks(this, false)">❌</button>
         <h2>Parks</h2>
         <div class="parkList">
             <div class="indiviualPark" data-id="1" onclick="selectPark(event)">Arusha National Park</div>
@@ -313,7 +313,7 @@
     </aside>
 
     <aside class="all_hotels" style="display: none;">
-        <button class="hideHotels close" onclick="openhotels(false)">❌</button>
+        <button class="hideHotels close" onclick="openhotels(this, false)">❌</button>
         <h2>Hotels</h2>
         <div class="hotelList">
             <div class="indiviualHotel" data-id="1" onclick="selectHotel(event)">Four Seasons Safari Lodge Serengeti</div>
@@ -425,7 +425,8 @@
             console.log(result);
         };
 
-        const openparks = (show) => {
+        const openparks = (id, show) => {
+            console.log(id);
             let all_parks = document.querySelector('.all_parks');
             let all_hotels = document.querySelector('.all_hotels');
             let previewSection = document.querySelector('.preview');
@@ -434,12 +435,17 @@
                 all_parks.style.display = 'block';
                 all_hotels.style.display = 'none';
                 previewSection.style.display = 'none';
+
+                all_parks.dataset.id = id;
+                delete all_hotels.dataset.id;
             } else {
                 all_parks.style.display = 'none';
+                delete all_parks.dataset.id;
+                delete all_hotels.dataset.id;
             }
         };
 
-        const openhotels = (show) => {
+        const openhotels = (id, show) => {
             let all_hotels = document.querySelector('.all_hotels');
             let all_parks = document.querySelector('.all_parks');
             let previewSection = document.querySelector('.preview');
@@ -448,8 +454,13 @@
                 all_hotels.style.display = 'block';
                 all_parks.style.display = 'none';
                 previewSection.style.display = 'none';
+
+                all_hotels.dataset.id = id;
+                delete all_parks.dataset.id;
             } else {
                 all_hotels.style.display = 'none';
+                delete all_hotels.dataset.id;
+                delete all_parks.dataset.id;
             }
         };
 
@@ -468,21 +479,26 @@
         };
 
         const selectPark = (event) => {
-            let parkListDiv = document.querySelector('.parkList');
-            let parkInputField = document.querySelector('.parks .park');
+            let all_parks = document.querySelector('.all_parks');
+            let parkInputField = document.querySelector(`.parks tr[data-id="${all_parks.dataset.id}"] .park`);
+            let selectedRow = document.querySelector(`.parks tr[data-id="${all_parks.dataset.id}"]`);
 
             parkInputField.value = event.target.textContent;
             parkInputField.dataset.id = event.target.dataset.id;
+            delete all_parks.dataset.id;
+            
             openparks(false);
             postData();
         };
 
         const selectHotel = (event) => {
+            let all_hotels = document.querySelector('.all_hotels');
             let hotelListDiv = document.querySelector('.hotelList');
-            let hotelInputField = document.querySelector('.parks .hotel');
+            let hotelInputField = document.querySelector(`.parks tr[data-id="${all_hotels.dataset.id}"] .hotel`);
 
             hotelInputField.value = event.target.textContent;
             hotelInputField.dataset.id = event.target.dataset.id;
+            delete all_hotels.dataset.id;
             openhotels(false);
             postData();
         };
@@ -500,6 +516,7 @@
         const addRow = () => {
             const table = document.querySelector('.parks tbody');
             const row = table.rows[0].cloneNode(true);
+            row.dataset.id = table.rows.length + 1;
 
             const inputs = row.querySelectorAll('input');
             inputs.forEach(input => {
