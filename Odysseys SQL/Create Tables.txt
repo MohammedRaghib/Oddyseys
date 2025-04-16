@@ -1,0 +1,43 @@
+CREATE TABLE parks (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    country ENUM('kenya', 'tanzania') NOT NULL
+);
+
+CREATE TABLE park_conservation_fees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    park_id INT NOT NULL,
+    visitor_type VARCHAR(50) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    currency ENUM('USD', 'KES', 'TZS') NOT NULL,
+    rate DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (park_id) REFERENCES parks(id) ON DELETE CASCADE
+);
+
+CREATE TABLE hotel_concession_fees (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    park_id INT NOT NULL,
+    visitor_type VARCHAR(50) NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    currency ENUM('USD', 'KES', 'TZS') NOT NULL,
+    rate DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (park_id) REFERENCES parks(id) ON DELETE CASCADE
+);
+
+CREATE TABLE park_hotels (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    hotel VARCHAR(255) NOT NULL,
+    park_id INT NOT NULL,
+    FOREIGN KEY (park_id) REFERENCES parks(id) ON DELETE CASCADE
+);
+
+CREATE TABLE hotel_rates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    hotel INTEGER NOT NULL,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    rate DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (hotel) REFERENCES park_hotels(id) ON DELETE CASCADE
+);
