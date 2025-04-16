@@ -90,7 +90,6 @@
             TZ-Infant: number,
         }
     ],
-    extras: number,
     flight: number,
     total: number,
     profit: number,
@@ -102,8 +101,10 @@
             start_date: string,
             end_date: string,
             hotel: number,
+            hotel_rate: number,
             days: number,
             car_hire: number,
+            extras: number,
         }
     ]
 } */
@@ -180,7 +181,7 @@ function isDateInRange($start_md, $end_md, $check_md)
  * @param string $start_date_str Start date of the trip in 'Y-m-d' format.
  * @param string $end_date_str End date of the trip in 'Y-m-d' format.
  * @param array $people Associative array of people categories and counts (e.g., ['adult' => 2, 'child' => 3]).
- * @param array $extras Associative array of extra costs (e.g., ['balooning' => 200]).
+ * @param float $extras Associative array of extra costs (e.g., ['balooning' => 200]).
  * @param int $hotel_id ID of the hotel for fetching hotel rates.
  * @param float $car_hire_per_day Cost of car hire per day.
  * @param int $park_id ID of the park for fetching park and concession fees.
@@ -217,7 +218,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
     $total_hotel_cost = 0;
     $total_concession_cost = 0;
     $total_car_hire_cost = $car_hire_per_day * array_sum($people) * $days;
-    $total_extras_cost = array_sum($extras);
+    $total_extras_cost = $extras;
     $cost_by_person_category = array_fill_keys(array_keys($people), 0);
     $concession_cost_by_person_category = array_fill_keys(array_keys($people), 0);
     $hotel_cost_per_night = 0;
@@ -304,6 +305,10 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
     }
 
     $total_cost = $total_park_cost + $total_hotel_cost + $total_concession_cost + $total_car_hire_cost + $total_extras_cost;
+    $total_people = array_sum($people);
+    if($total_people <= 0) {
+        $total_people = 1;
+    }
 
     return array(
         'park_id' => $park_id,
@@ -311,14 +316,13 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
         'start_date' => $start_date_str,
         'end_date' => $end_date_str,
         'people_breakdown' => $people,
-        'extras_breakdown' => $extras,
         'conservancy_fees' => array(
             'total' => $total_park_cost,
             'by_person_type' => $cost_by_person_category
         ),
         'hotel_cost' => array(
             'total' => $total_hotel_cost,
-            'per_night_per_person' => $hotel_cost_per_night / array_sum($people)
+            'per_night_per_person' => $hotel_cost_per_night / $total_people,
         ),
         'concession_fees' => array(
             'total' => $total_concession_cost,

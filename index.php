@@ -233,7 +233,9 @@
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Hotel</th>
+                        <th>Hotel Rate (optional)</th>
                         <th>Car Hire Per Day</th>
+                        <th>Extras Fee</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -243,7 +245,9 @@
                         <td><input type="date" class="start_date" name="start_date" required></td>
                         <td><input type="date" class="end_date" name="end_date" required></td>
                         <td class="double"><input type="text" class="hotel" name="hotel" disabled required><button class="openHotels" onclick="openhotels(this.closest('tr').dataset.id, true)">Select Hotel</button></td>
+                        <td><input type="number" class="hotel_rate" step='0.01' min=0 name="hotel_rate" required></td>
                         <td><input type="number" class="car_hire" min=0 name="car_hire" required></td>
+                        <td><input type="number" class="extras" step='0.01' min=0 name="extras" required></td>
                         <td><button class="remove-row" onclick="removeRow(this)">Remove</button></td>
                     </tr>
                 </tbody>
@@ -327,13 +331,33 @@
             })
         });
 
-        const initial_load = () => {
+        const initial_load = async () => {
+            const response = await fetch('get_parks.php?for=hotelpage');
+            const data = await response.json();
+            const parksSelects = document.querySelectorAll('.parkSelect');
+            const hotelSelect = document.getElementById('hotels');
 
+            console.log(data);
+
+            /* data.parks.forEach((park) => {
+                parksSelects.forEach((select) => {
+                    let option = document.createElement('option');
+                    option.value = park;
+                    option.textContent = park;
+                    select.appendChild(option);
+                });
+            });
+
+            data.hotels.forEach((hotel) => {
+                let option = document.createElement('option');
+                option.value = hotel['hotel'];
+                option.textContent = hotel['hotel'];
+                hotelSelect.appendChild(option);
+            }); */
         };
 
         const postData = async () => {
-            /* Posting data to server in the format:
-            {
+            /* Posting data to server in the format: {
                 people: [
                     {
                         EA-Adult: number,
@@ -347,7 +371,6 @@
                         TZ-Infant: number,
                     }
                 ],
-                extras: number,
                 flight: number,
                 total: number,
                 profit: number,
@@ -359,8 +382,10 @@
                         start_date: string,
                         end_date: string,
                         hotel: number,
+                        hotel_rate: number,
                         days: number,
                         car_hire: number,
+                        extras: number,
                     }
                 ]
             } */
@@ -376,7 +401,6 @@
                 people.push(peopleObj);
             });
 
-            const extras = Number(document.querySelector('.extras').value || 0);
             const flight = Number(document.querySelector('.flight').value || 0);
             const total = Number(document.querySelector('.total').value || 0);
             const profit = Number(document.querySelector('.profit').value || 0);
@@ -396,15 +420,16 @@
                     start_date: row.querySelector('input[name="start_date"]').value || '',
                     end_date: row.querySelector('input[name="end_date"]').value || '',
                     hotel: Number(row.querySelector('input[name="hotel"]').dataset.id || 0),
+                    hotel_rate: Number(row.querySelector('input[name="hotel_rate"]').value || 0),
                     days: days,
                     car_hire: Number(row.querySelector('input[name="car_hire"]').value || 0),
+                    extras: Number(row.querySelector('input[name="extras"]').value || 0),
                 };
                 parks.push(park);
             });
 
             const data = {
                 people,
-                extras,
                 flight,
                 total,
                 profit,
