@@ -1,37 +1,6 @@
 <?php
-/* Fees:
-    1. Park fee - varies with visitor type and date
-    2. Concession fee - varies visitor type and date. Is also per night
-    3. Hotel fee - varies with date. Is also per night
-    4. Car hire - days * rate
-    5. Special fees - check for each park if there is one and add
-    6. Extras - right now it is one amount just need to add to total, may need to be changed
-    7. Flight - one amount just need to add to total
-*/
-/* All fees to check or calculate for each park:
-    Ea adult - park fee
-    Ea child - park fee
-    Ea infant - park fee
-    Non ea adult - park fee
-    Non ea child - park fee
-    Non ea infant - park fee
-    TZ adult - park fee
-    TZ child - park fee
-    TZ infant - park fee
-    Ea adult - concession fee
-    Ea child - concession fee
-    Ea infant - concession fee
-    Non ea adult - concession fee
-    Non ea child - concession fee
-    Non ea infant - concession fee
-    TZ adult - concession fee
-    TZ child - concession fee
-    TZ infant - concession fee
-    total people * hotel fee
-    total days * car hire
-    special fees (if any)
-*/
-/* Tables (In sqlite format): 
+
+/* Tables (In sqlite format):
     CREATE TABLE parks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -57,6 +26,7 @@
         end_date DATE NOT NULL,
         currency TEXT NOT NULL CHECK(currency IN ('USD', 'KES', 'TZS')),
         rate REAL NOT NULL,
+        park INTEGER NOT NULL, -- Changed from hotel_id to park
         FOREIGN KEY (park_id) REFERENCES parks(id) ON DELETE CASCADE
     );
 
@@ -76,89 +46,27 @@
         FOREIGN KEY (hotel) REFERENCES park_hotels(id) ON DELETE CASCADE
     );
 */
-/* Posting data to server in the format: {
-    people: [
-        {
-            EA-Adult: number,
-            EA-Child: number,
-            EA-Infant: number,
-            Non-EA-Adult: number,
-            Non-EA-Child: number,
-            Non-EA-Infant: number,
-            TZ-Adult: number,
-            TZ-Child: number,
-            TZ-Infant: number,
-        }
-    ],
-    extras: number,
-    flight: number,
-    total: number,
-    profit: number,
-    discount: number,
-    invoice_amount: number,
-    parks: [
-        {
-            park: number,
-            start_date: string,
-            end_date: string,
-            hotel: number,
-            days: number,
-            car_hire: number,
-        }
-    ]
-} */
 
-$pdo = new PDO("sqlite:./travel.db");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$people = [];
+# parameters
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $data = json_decode(file_get_contents('php://input'), true);
+// $start_date_str = "2025-01-01";
+// $end_date_str = "2025-01-05";
 
-    $people = $data['people'];
-    $flight = $data['flight'];
-    $total = $data['total'];
-    $profit = $data['profit'];
-    $discount = $data['discount'];
-    $invoice_amount = $data['invoice_amount'];
-    $parks = $data['parks'];
+$start_date_str = "2025-07-15"; // Within July-September
+$end_date_str = "2025-07-20";  // Within July-September
 
-    $output = [];
-    foreach ($parks as $park) {
-        $output[] = get_cost_by_park($park['start_date'], $park['end_date'], $people, $park['extras'], $park['hotel'], $park['car_hire'], $park['park']);
-    };
+$people = array(
+    "non_ea_citizen_adult" => 2,
+    "non_ea_citizen_child" => 2
+);
+$extras = array(
+    "balooning" => 200
+);
+$hotel_id = 109; // Momella Wildlife Lodge ID from park_hotels table
+$car_hire_per_day = 50; // Assuming a per day rate
+$park_id = 14; // Serengeti Park ID from parks table
 
-    $everything_total = 0;
-    $everything_total += $flight;
-    foreach ($output as $item) {
-        $everything_total += $item['total_cost'];
-    }
 
-    $output['total_cost'] = $everything_total;
-
-    echo json_encode($output);
-    exit;
-}
-
-/**
- * Checks if a given date is within a range of two dates.
- *
- * This function assumes that the given dates are in the format "mm-dd".
- * It also assumes that the given dates are in the same year, so it
- * "normalizes" the dates by prepending "2000-" to the given dates.
- *
- * If the start date is after the end date, it means that the range
- * crosses the year end, so the function returns true if the check
- * date is either after the start date or before the end date.
- *
- * Otherwise, the function returns true if the check date is within
- * the start and end dates (inclusive).
- *
- * @param string $start_md Start date in the format "mm-dd"
- * @param string $end_md End date in the format "mm-dd"
- * @param string $check_md Date to check in the format "mm-dd"
- * @return bool True if the check date is within the given range, false otherwise
- */
 function isDateInRange($start_md, $end_md, $check_md)
 {
     $year = "2000";
@@ -173,32 +81,6 @@ function isDateInRange($start_md, $end_md, $check_md)
     }
 }
 
-/**
- * Calculate the total cost of a trip to a park including park fees, hotel costs, 
- * concession fees, car hire, and extras based on the given parameters.
- *
- * @param string $start_date_str Start date of the trip in 'Y-m-d' format.
- * @param string $end_date_str End date of the trip in 'Y-m-d' format.
- * @param array $people Associative array of people categories and counts (e.g., ['adult' => 2, 'child' => 3]).
- * @param array $extras Associative array of extra costs (e.g., ['balooning' => 200]).
- * @param int $hotel_id ID of the hotel for fetching hotel rates.
- * @param float $car_hire_per_day Cost of car hire per day.
- * @param int $park_id ID of the park for fetching park and concession fees.
- *
- * @return array Associative array containing detailed breakdown of costs:
- *               - 'park_id': ID of the park
- *               - 'hotel_id': ID of the hotel
- *               - 'start_date': Start date of the trip
- *               - 'end_date': End date of the trip
- *               - 'people_breakdown': Breakdown of people by category
- *               - 'extras_breakdown': Breakdown of extra costs
- *               - 'conservancy_fees': Total and per person type park fees
- *               - 'hotel_cost': Total and per person per night hotel fees
- *               - 'concession_fees': Total and per person type concession fees
- *               - 'car_hire_cost': Total car hire cost
- *               - 'extras_cost': Total extra costs
- *               - 'total_cost': Total cost of the trip
- */
 function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hotel_id, $car_hire_per_day, $park_id)
 {
     try {
@@ -329,3 +211,10 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
         'total_cost' => $total_cost
     );
 }
+
+# Example Usage:
+$result = get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hotel_id, $car_hire_per_day, $park_id);
+
+echo "<pre>";
+print_r($result);
+echo "</pre>";
