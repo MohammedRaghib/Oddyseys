@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Hotel</title>
+    <title>Park Hotels</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -183,7 +183,7 @@
 
 <body>
     <main class="adding">
-        <h1>Season Hotels Rates</h1>
+        <h1>Park Hotels</h1>
         <form class="add_hotel_form" name="add_hotel_form" onsubmit="handleSubmit(event)">
             <div class="changeHotel">
                 <span>Current editing hotel: <b id="currentHotel"></b></span>
