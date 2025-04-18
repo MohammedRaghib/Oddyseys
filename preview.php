@@ -152,8 +152,8 @@ $previewData = isset($_SESSION['preview_data']) ? $_SESSION['preview_data'] : []
             "discount": 0,
             "invoice_amount": 0
         }   */
-        // const data = <?php echo json_encode($previewData); ?>;
-        const data = {
+        const data = <?php echo json_encode($previewData); ?>;
+        /* const data = {
             'parks': [{
                     'park_name': 'Serengeti National Park',
                     'hotel_name': 'Serengeti Serena Safari Lodge',
@@ -238,7 +238,7 @@ $previewData = isset($_SESSION['preview_data']) ? $_SESSION['preview_data'] : []
             'profit': 1000,
             'discount': 0,
             'invoice_amount': 3850
-        };
+        }; */
         console.log(data);
         const main = document.querySelector('.container');
         const parks = document.querySelector('.parks_data');
