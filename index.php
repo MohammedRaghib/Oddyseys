@@ -284,8 +284,6 @@
                 </tbody>
             </table>
             <aside class="other_fees">
-                <span>Extras:</span>
-                <input type="number" step="0.01" min=0 class="extras" name="extras">
                 <span>Flight:</span>
                 <input type="number" step="0.01" min=0 class="flight" name="flight">
                 <span>Total:</span>
@@ -297,7 +295,7 @@
                 <span>Invoice amount:</span>
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
-            <button onclick="openPreview(true)">Show Preview</button>
+            <a href="preview.php">Show Preview</a>
         </section>
         <section class="preview">
             <button class="closePreview" onclick="openPreview(false)">❌</button>
@@ -311,16 +309,16 @@
     <aside class="all_parks" style="display: none;">
         <button class="hideParks close" onclick="openparks(this, false)">❌</button>
         <h2>Parks</h2>
+        <input type="text" class="search-bar" oninput="searchParks(event)" placeholder="Search parks...">
         <div class="parkList">
-            <div class="indiviualPark" data-id="1" onclick="selectPark(event)">Arusha National Park</div>
         </div>
     </aside>
 
     <aside class="all_hotels" style="display: none;">
         <button class="hideHotels close" onclick="openhotels(this, false)">❌</button>
         <h2>Hotels</h2>
+        <input type="text" class="search-bar hotels" oninput="searchHotels(event.target.value)" placeholder="Search hotels...">
         <div class="hotelList">
-            <div class="indiviualHotel" data-id="1" onclick="selectHotel(event)">Four Seasons Safari Lodge Serengeti</div>
         </div>
     </aside>
 
@@ -334,71 +332,40 @@
         const initial_load = async () => {
             const response = await fetch('get_parks.php?for=hotelpage');
             const data = await response.json();
-            const parksSelects = document.querySelectorAll('.parkSelect');
-            const hotelSelect = document.getElementById('hotels');
+            const parksList = document.querySelector('.parkList');
+            const hotelList = document.querySelector('.hotelList');
 
             console.log(data);
 
-            /* data.parks.forEach((park) => {
-                parksSelects.forEach((select) => {
-                    let option = document.createElement('option');
-                    option.value = park;
-                    option.textContent = park;
-                    select.appendChild(option);
-                });
+            data.parks.forEach((park) => {
+                let div = document.createElement('div');
+                div.classList.add('indiviualPark');
+                div.textContent = park.name;
+                div.dataset.id = park.id;
+                div.addEventListener('click', (event) => selectPark(event));
+                parksList.appendChild(div);
             });
 
             data.hotels.forEach((hotel) => {
-                let option = document.createElement('option');
-                option.value = hotel['hotel'];
-                option.textContent = hotel['hotel'];
-                hotelSelect.appendChild(option);
-            }); */
+                let div = document.createElement('div');
+                div.classList.add('indiviualHotel');
+                div.textContent = hotel.hotel;
+                div.dataset.id = hotel.id;
+                div.dataset.parkId = hotel.park_id;
+                div.addEventListener('click', (event) => selectHotel(event));
+                hotelList.appendChild(div);
+            });
         };
 
         const postData = async () => {
-            /* Posting data to server in the format: {
-                people: [
-                    {
-                        EA-Adult: number,
-                        EA-Child: number,
-                        EA-Infant: number,
-                        Non-EA-Adult: number,
-                        Non-EA-Child: number,
-                        Non-EA-Infant: number,
-                        TZ-Adult: number,
-                        TZ-Child: number,
-                        TZ-Infant: number,
-                    }
-                ],
-                flight: number,
-                total: number,
-                profit: number,
-                discount: number,
-                invoice_amount: number,
-                parks: [
-                    {
-                        park: number,
-                        start_date: string,
-                        end_date: string,
-                        hotel: number,
-                        hotel_rate: number,
-                        days: number,
-                        car_hire: number,
-                        extras: number,
-                    }
-                ]
-            } */
             const people = [];
             const peopleTable = document.querySelector('.people');
             const rows = peopleTable.querySelectorAll('tbody tr');
             rows.forEach(row => {
-                const peopleObj = {};
                 const inputs = row.querySelectorAll('input');
                 inputs.forEach(input => {
-                    peopleObj[input.name] = Number(input.value || 0);
+                    people[input.name] = Number(input.value || 0);
                 });
-                people.push(peopleObj);
             });
 
             const flight = Number(document.querySelector('.flight').value || 0);
@@ -417,9 +384,11 @@
 
                 const park = {
                     park: Number(row.querySelector('input[name="park"]').dataset.id || 0),
+                    park_name: row.querySelector('input[name="park"]').value || '',
                     start_date: row.querySelector('input[name="start_date"]').value || '',
                     end_date: row.querySelector('input[name="end_date"]').value || '',
                     hotel: Number(row.querySelector('input[name="hotel"]').dataset.id || 0),
+                    hotel_name: row.querySelector('input[name="hotel"]').value || '',
                     hotel_rate: Number(row.querySelector('input[name="hotel_rate"]').value || 0),
                     days: days,
                     car_hire: Number(row.querySelector('input[name="car_hire"]').value || 0),
@@ -437,7 +406,7 @@
                 invoice_amount,
                 parks
             };
-
+            console.log(data);
             const response = await fetch('get_cost.php', {
                 method: 'POST',
                 headers: {
@@ -473,6 +442,7 @@
             let all_hotels = document.querySelector('.all_hotels');
             let all_parks = document.querySelector('.all_parks');
             let previewSection = document.querySelector('.preview');
+            let hotelSearchBar = document.querySelector('.search-bar.hotels');
 
             if (show) {
                 all_hotels.style.display = 'block';
@@ -506,11 +476,14 @@
             let all_parks = document.querySelector('.all_parks');
             let parkInputField = document.querySelector(`.parks tr[data-id="${all_parks.dataset.id}"] .park`);
             let selectedRow = document.querySelector(`.parks tr[data-id="${all_parks.dataset.id}"]`);
+            let hotelSearchBar = document.querySelector('.search-bar.hotels');
 
             parkInputField.value = event.target.textContent;
             parkInputField.dataset.id = event.target.dataset.id;
+            hotelSearchBar.dataset.id = parkInputField.dataset.id;
             delete all_parks.dataset.id;
 
+            searchHotels('');
             openparks(false);
             postData();
         };
@@ -559,6 +532,35 @@
             } else {
                 alert('At least one row must remain!');
             }
+        }
+
+        const searchParks = (e) => {
+            let searchValue = e.target.value.toLowerCase();
+            let parkItems = document.querySelectorAll('.parkList .indiviualPark');
+
+            parkItems.forEach((park) => {
+                let parkName = park.textContent.toLowerCase();
+                if (parkName.includes(searchValue)) {
+                    park.style.display = 'block';
+                } else {
+                    park.style.display = 'none';
+                }
+            });
+        }
+
+        const searchHotels = (v) => {
+            let searchValue = v.toLowerCase();
+            let hotelItems = document.querySelectorAll('.hotelList .indiviualHotel');
+            let hotelSearchBar = document.querySelector('.search-bar.hotels');
+
+            hotelItems.forEach((hotel) => {
+                let hotelName = hotel.textContent.toLowerCase();
+                if (hotelName.includes(searchValue) && hotel.dataset.parkId == hotelSearchBar.dataset.id) {
+                    hotel.style.display = 'block';
+                } else {
+                    hotel.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

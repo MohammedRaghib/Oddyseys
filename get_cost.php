@@ -77,19 +77,17 @@
     );
 */
 /* Posting data to server in the format: {
-    people: [
-        {
-            EA-Adult: number,
-            EA-Child: number,
-            EA-Infant: number,
-            Non-EA-Adult: number,
-            Non-EA-Child: number,
-            Non-EA-Infant: number,
-            TZ-Adult: number,
-            TZ-Child: number,
-            TZ-Infant: number,
-        }
-    ],
+    people:{
+        EA-Adult: number,
+        EA-Child: number,
+        EA-Infant: number,
+        Non-EA-Adult: number,
+        Non-EA-Child: number,
+        Non-EA-Infant: number,
+        TZ-Adult: number,
+        TZ-Child: number,
+        TZ-Infant: number,
+    },
     flight: number,
     total: number,
     profit: number,
@@ -98,9 +96,11 @@
     parks: [
         {
             park: number,
+            park_name: string,
             start_date: string,
             end_date: string,
             hotel: number,
+            hotel_name: string,
             hotel_rate: number,
             days: number,
             car_hire: number,
@@ -137,8 +137,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $output['total_cost'] = $everything_total;
 
+    session_start();
+
+    $final_output = [
+        'parks' => $output,
+        'flight' => $flight,
+        'total' => $output['total_cost'],
+        'profit' => $profit,
+        'discount' => $discount,
+        'invoice_amount' => $invoice_amount
+    ];
+
+    $_SESSION['preview_data'] = $final_output;
+
+    // Redirect to the preview page
     echo json_encode($output);
-    exit;
+    exit();
 }
 
 /**
@@ -306,7 +320,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
 
     $total_cost = $total_park_cost + $total_hotel_cost + $total_concession_cost + $total_car_hire_cost + $total_extras_cost;
     $total_people = array_sum($people);
-    if($total_people <= 0) {
+    if ($total_people <= 0) {
         $total_people = 1;
     }
 
