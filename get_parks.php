@@ -25,7 +25,7 @@ try {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $for = $_GET['for'] ? $_GET['for'] : '';
+        $for = isset($_GET['for']) ? $_GET['for'] : '';
 
         if ($for === 'hotelpage') {
             try {
@@ -66,7 +66,7 @@ try {
                 echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
             }
         }else if($for = 'hotel_info'){
-            $id = $_GET['id'] ? $_GET['id'] : '';
+            $id = isset($_GET['id']) ? $_GET['id'] : '';
 
             $get_park_id_query = 'SELECT park_id FROM park_hotels WHERE id = :id';
             $park_id_stmt = $pdo ->prepare($get_park_id_query);

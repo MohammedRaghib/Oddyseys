@@ -8,8 +8,9 @@
 </head>
 
 <body onload="initial_load()">
+    <input type="text" class="park" name="park" disabled required><button class="openParks" onclick="openparks(true)">Select Park</button>
     <aside class="all_parks" style="display: none;">
-        <button class="hideParks close" onclick="openparks(this, false)">❌</button>
+        <button class="hideParks close" onclick="openparks(false)">❌</button>
         <h2>Parks</h2>
         <input type="text" class="search-bar" oninput="searchParks(event)" placeholder="Search parks...">
         <div class="parkList">
@@ -31,18 +32,13 @@
             });
         };
 
-        const openparks = (id, show) => {
+        const openparks = (show) => {
             let all_parks = document.querySelector('.all_parks');
-            let previewSection = document.querySelector('.preview');
 
             if (show) {
                 all_parks.style.display = 'block';
-                previewSection.style.display = 'none';
-
-                all_parks.dataset.id = id;
             } else {
                 all_parks.style.display = 'none';
-                delete all_parks.dataset.id;
             }
         };
 
@@ -59,6 +55,15 @@
                 }
             });
         }
+
+        const selectPark = (event) => {
+            let all_parks = document.querySelector('.all_parks');
+            let parkInputField = document.querySelector(`.park`);
+
+            parkInputField.value = event.target.textContent;
+            parkInputField.dataset.id = event.target.dataset.id;
+            openparks(false);
+        };
     </script>
 </body>
 
