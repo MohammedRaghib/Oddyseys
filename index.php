@@ -233,8 +233,8 @@
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Hotel</th>
-                        <th>Hotel Rate (optional)</th>
-                        <th>Car Hire Per Day</th>
+                        <th>Hotel Rate In USD Per Person Per Night</th>
+                        <th>Car Hire In USD Per Person Per Day</th>
                         <th>Extras Fee</th>
                         <th>Actions</th>
                     </tr>
@@ -284,7 +284,7 @@
                 </tbody>
             </table>
             <aside class="other_fees">
-                <span>Flight:</span>
+                <span>Flight In USD Per Person:</span>
                 <input type="number" step="0.01" min=0 class="flight" name="flight">
                 <span>Total:</span>
                 <input type="number" step="0.01" min=0 onchange="calcInvoiceAmount()" class="total" name="total">
@@ -414,9 +414,8 @@
                 },
                 body: JSON.stringify(data),
             });
-
+            
             const result = await response.json();
-            console.log(result);
         };
 
         const openparks = (id, show) => {
