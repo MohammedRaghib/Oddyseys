@@ -239,7 +239,7 @@
                         <th>Hotel</th>
                         <th>Hotel Rate In USD Per Person Per Night</th>
                         <th>Car Hire In USD Per Person Per Day</th>
-                        <th>Extras Fee</th>
+                        <th>Extras Fee In USD Per Person</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
