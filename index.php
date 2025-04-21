@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Odysseys Costing</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -219,6 +218,11 @@
         .preview-content p {
             margin-bottom: 10px;
         }
+
+        .total,
+        .invoice_amount {
+            background-color: lightgray;
+        }
     </style>
 </head>
 
@@ -286,7 +290,7 @@
             <aside class="other_fees">
                 <span>Flight In USD Per Person:</span>
                 <input type="number" step="0.01" min=0 class="flight" name="flight">
-                <span>Total:</span>
+                <span>Total Itinerary Cost:</span>
                 <input type="number" step="0.01" min=0 onchange="calcInvoiceAmount()" class="total" name="total">
                 <span>Profit %:</span>
                 <input type="number" step="0.01" min=0 onchange="calcInvoiceAmount()" class="profit" name="profit">
@@ -295,7 +299,7 @@
                 <span>Invoice amount:</span>
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
-            <a href="preview.php">Show Preview</a>
+            <a href="preview.php" target="_blank">Show Preview</a>
         </section>
         <section class="preview">
             <button class="closePreview" onclick="openPreview(false)">❌</button>
@@ -334,8 +338,6 @@
             const data = await response.json();
             const parksList = document.querySelector('.parkList');
             const hotelList = document.querySelector('.hotelList');
-
-            console.log(data);
 
             data.parks.forEach((park) => {
                 let div = document.createElement('div');
@@ -406,16 +408,23 @@
                 invoice_amount,
                 parks
             };
-            console.log(data);
             const response = await fetch('get_cost.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(data),
-            });
-            
-            const result = await response.json();
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data),
+                })
+                .then((response) => response.json())
+                .then((result) => {
+                    document.querySelector('.total').value = Number(result.total);
+                    calcInvoiceAmount();
+                    console.log(result);
+                    localStorage.setItem('previewData', JSON.stringify(result));
+                })
+                .catch((e) => {
+                    console.error('Error fetching data:', e);
+                });
         };
 
         const openparks = (id, show) => {
