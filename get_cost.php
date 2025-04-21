@@ -137,8 +137,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $output['total_cost'] = $everything_total;
 
-    session_start();
-
     $final_output = [
         'parks' => $output,
         'flight' => $flight,
@@ -148,10 +146,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'invoice_amount' => $invoice_amount
     ];
 
-    $_SESSION['preview_data'] = $final_output;
-
     // Redirect to the preview page
-    echo json_encode($output);
+    echo json_encode($final_output);
     exit();
 }
 

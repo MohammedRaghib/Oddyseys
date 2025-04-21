@@ -1,8 +1,3 @@
-<?php
-session_start();
-
-$previewData = isset($_SESSION['preview_data']) ? $_SESSION['preview_data'] : [];
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -158,7 +153,8 @@ $previewData = isset($_SESSION['preview_data']) ? $_SESSION['preview_data'] : []
             "discount": 0,
             "invoice_amount": 0
         }   */
-        const data = <?php echo json_encode($previewData); ?>;
+        const rawData = localStorage.getItem('previewData');
+        const data = rawData ? JSON.parse(rawData) : {};
         /* const data = {
             'parks': [{
                     'park_name': 'Serengeti National Park',
