@@ -27,70 +27,105 @@
             border-radius: 10px;
             box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
             width: 80%;
-            max-width: 600px;
-            text-align: center;
+            max-width: 1000px;
         }
 
         .breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
             margin-bottom: 20px;
             padding: 20px;
             background: #f9f9f9;
-            border-radius: 8px;
+            border-radius: 10px;
         }
 
-        .note {
-            display: block;
-            color: #777;
-            font-size: 0.9em;
+        .parkContainer {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            text-align: left;
+        }
+
+        .parkContainer h2 {
+            font-size: 1.2em;
             margin-bottom: 10px;
-        }
-
-        .breakdown div {
-            background-color: #e0f7f7;
             color: #008080;
-            padding: 10px;
+        }
+
+        .parkContainer span {
+            display: block;
+            font-size: 0.9em;
             margin-bottom: 8px;
-            border-radius: 5px;
-            font-weight: bold;
+            color: #555;
         }
 
-        .breakdown div:last-child {
-            margin-bottom: 0;
+        .sub_total_people {
+            margin-top: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
         }
 
+        .sub_total_people .note {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1em;
+            color: #777;
+        }
+
+        .sub_total_people div {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .flight,
         .overall_total {
             display: block;
-            margin-top: 25px;
+            margin-top: 20px;
             font-size: 1.1em;
             font-weight: 600;
-            color: #008080;
+            text-align: center;
         }
 
+        .flight input[type="number"],
         .overall_total input[type="number"] {
             font-size: 1.1em;
             font-weight: bold;
             color: #333;
             border: none;
-            background: lightgray;
+            background: #e8e8e8;
             border-radius: 5px;
             padding: 8px 12px;
             width: auto;
             display: inline-block;
             text-align: center;
         }
+        .special_fees {
+            border-top: 1px solid black;
+            padding: 5px;
+        }
     </style>
-
 </head>
 
 <body>
     <main class="wrapper">
         <section class="breakdown">
+
+        </section>
+
+        <section class="sub_total_people">
             <span class="note">This is the total cost for each visitor type</span>
         </section>
+
+        <span class="flight">Flight = <input type="number" name="flight" id="flight" disabled></span>
         <span class="overall_total">TOTAL = <input type="number" name="total" id="total" disabled></span>
     </main>
     <script>
-        /*
+        /* JSON data format gotten from index.php
             parks: {
                 0: {
                     park_id: 14,
@@ -148,17 +183,73 @@
         */
         const urlParams = new URLSearchParams(window.location.search);
         const data = JSON.parse(decodeURIComponent(urlParams.get("data")));
-
         console.log(data);
+        const Formatted_people = {
+            'ea_citizen_adult': 'EA Adult',
+            'ea_citizen_child': 'EA Child',
+            'ea_citizen_infant': 'EA Infant',
+            'non_ea_citizen_adult': 'Non-EA Adult',
+            'non_ea_citizen_child': 'Non-EA Child',
+            'non_ea_citizen_infant': 'Non-EA Infant',
+            'tz_resident_adult': 'TZ Adult',
+            'tz_resident_child': 'TZ Child',
+            'tz_resident_infant': 'TZ Infant',
+        };
+
+        const calculateSum = (obj) => Object.values(obj).reduce((sum, num) => sum + num, 0);
+
+        Object.entries(data.parks).forEach(([key, value]) => {
+            if (key !== 'total_cost') {
+                let container = document.createElement('div');
+                container.classList.add('parkContainer');
+
+                let fragment = document.createDocumentFragment();
+                Object.entries(value.people_breakdown).forEach(([key2, value2]) => {
+                    let total_people = calculateSum(value.people_breakdown);
+                    let wrapper_div = document.createElement('div');
+                    let title = document.createElement('h2');
+                    let conservancy_fees = document.createElement('span');
+                    let hotel_cost = document.createElement('span');
+                    let concession_fees = document.createElement('span');
+                    let car_hire = document.createElement('span');
+                    let extras_cost = document.createElement('span');
+
+                    title.textContent = `${Formatted_people[key2]} (${value.park_name})`;
+                    conservancy_fees.textContent = `Conservancy Fees: ${value.conservancy_fees?.by_person_type[key2] || 0}`;
+                    hotel_cost.textContent = `Hotel Cost: ${value.hotel_cost?.per_night_per_person * value2 || 0}`;
+                    concession_fees.textContent = `Concession Fees: ${value.concession_fees?.by_person_type[key2] || 0}`;
+                    car_hire.textContent = `Car Hire: ${(value.car_hire_cost / total_people) * value2 || 0}`;
+                    extras_cost.textContent = `Extra Fee: ${(value.extras_cost / total_people) * value2 || 0}`;
+
+                    wrapper_div.appendChild(title);
+                    wrapper_div.appendChild(conservancy_fees);
+                    wrapper_div.appendChild(hotel_cost);
+                    wrapper_div.appendChild(concession_fees);
+                    wrapper_div.appendChild(car_hire);
+                    wrapper_div.appendChild(extras_cost);
+
+                    fragment.appendChild(wrapper_div);
+
+                });
+
+                let special_fees = document.createElement('span');
+                special_fees.classList.add('special_fees');
+                special_fees.textContent = `Special Fees =  ${value.special_fees?.name || ''} : ${value.special_fees?.total || 0}`;
+                container.appendChild(fragment);
+                container.appendChild(special_fees);
+                document.querySelector('.breakdown').appendChild(container);
+            }
+        });
 
         if (data.total_cost_by_visitor_category) {
             Object.entries(data.total_cost_by_visitor_category).forEach(([key, value]) => {
                 const div = document.createElement('div');
                 div.textContent = `${key}: ${value}`;
-                document.querySelector('.breakdown').appendChild(div);
+                document.querySelector('.sub_total_people').appendChild(div);
             });
         }
 
+        document.querySelector('#flight').value = data.flight || 0;
         document.querySelector('#total').value = data.total || 0;
     </script>
 </body>
