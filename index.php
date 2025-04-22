@@ -269,21 +269,21 @@
                 <tbody>
                     <tr>
                         <td>EA citizens</td>
-                        <td><input type="number" name="EA-Adult" class="table-input" id="EA-Adult" min=0></td>
-                        <td><input type="number" name="EA-Child" class="table-input" id="EA-Child" min=0></td>
-                        <td><input type="number" name="EA-Infant" class="table-input" id="EA-Infant" min=0></td>
+                        <td><input type="number" name="ea_citizen_adult" class="table-input" id="EA-Adult" min=0></td>
+                        <td><input type="number" name="ea_citizen_child" class="table-input" id="EA-Child" min=0></td>
+                        <td><input type="number" name="ea_citizen_infant" class="table-input" id="EA-Infant" min=0></td>
                     </tr>
                     <tr>
                         <td>Non EA citizens</td>
-                        <td><input type="number" name="Non-EA-Adult" class="table-input" id="Non-EA-Adult" min=0></td>
-                        <td><input type="number" name="Non-EA-Child" class="table-input" id="Non-EA-Child" min=0></td>
-                        <td><input type="number" name="Non-EA-Infant" class="table-input" id="Non-EA-Infant" min=0></td>
+                        <td><input type="number" name="non_ea_citizen_adult" class="table-input" id="Non-EA-Adult" min=0></td>
+                        <td><input type="number" name="non_ea_citizen_child" class="table-input" id="Non-EA-Child" min=0></td>
+                        <td><input type="number" name="non_ea_citizen_infant" class="table-input" id="Non-EA-Infant" min=0></td>
                     </tr>
                     <tr>
                         <td>TZ residents</td>
-                        <td><input type="number" name="TZ-Adult" class="table-input" id="TZ-Adult" min=0></td>
-                        <td><input type="number" name="TZ-Child" class="table-input" id="TZ-Child" min=0></td>
-                        <td><input type="number" name="TZ-Infant" class="table-input" id="TZ-Infant" min=0></td>
+                        <td><input type="number" name="tz_resident_adult" class="table-input" id="TZ-Adult" min=0></td>
+                        <td><input type="number" name="tz_resident_child" class="table-input" id="TZ-Child" min=0></td>
+                        <td><input type="number" name="tz_resident_infant" class="table-input" id="TZ-Infant" min=0></td>
                     </tr>
                 </tbody>
             </table>
