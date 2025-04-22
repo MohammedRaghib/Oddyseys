@@ -239,7 +239,7 @@
                         <th>Hotel</th>
                         <th>Hotel Rate In USD Per Person Per Night</th>
                         <th>Car Hire In USD Per Person Per Day</th>
-                        <th>Extras Fee</th>
+                        <th>Extra Fee In USD Per Person</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -291,11 +291,11 @@
                 <span>Flight In USD Per Person:</span>
                 <input type="number" step="0.01" min=0 class="flight" name="flight">
                 <span>Total Itinerary Cost:</span>
-                <input type="number" step="0.01" min=0 onchange="calcInvoiceAmount()" class="total" name="total">
+                <input type="number" step="0.01" min=0 class="total" name="total">
                 <span>Profit %:</span>
-                <input type="number" step="0.01" min=0 onchange="calcInvoiceAmount()" class="profit" name="profit">
+                <input type="number" step="0.01" min=0 class="profit" name="profit">
                 <span>Discount %:</span>
-                <input type="number" step="0.01" min=0 onchange="calcInvoiceAmount()" class="discount" name="discount">
+                <input type="number" step="0.01" min=0 class="discount" name="discount">
                 <span>Invoice amount:</span>
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
@@ -360,16 +360,14 @@
         };
 
         const postData = async () => {
-            const people = [];
-            const peopleTable = document.querySelector('.people');
-            const rows = peopleTable.querySelectorAll('tbody tr');
+            const people = {};
+            const rows = document.querySelectorAll('.people tbody tr');
             rows.forEach(row => {
                 const inputs = row.querySelectorAll('input');
                 inputs.forEach(input => {
-                    people[input.name] = Number(input.value || 0);
+                    people[input.name] = Number(input.value) || 0;
                 });
             });
-
             const flight = Number(document.querySelector('.flight').value || 0);
             const total = Number(document.querySelector('.total').value || 0);
             const profit = Number(document.querySelector('.profit').value || 0);
@@ -408,6 +406,7 @@
                 invoice_amount,
                 parks
             };
+            console.log(data);
             const response = await fetch('get_cost.php', {
                     method: 'POST',
                     headers: {
@@ -417,8 +416,10 @@
                 })
                 .then((response) => response.json())
                 .then((result) => {
-                    document.querySelector('.total').value = Number(result.total);
-                    calcInvoiceAmount();
+                    document.querySelector('.total').value = result.total;
+                    document.querySelector('.profit').value = Number(result.profit);
+                    document.querySelector('.discount').value = Number(result.discount);
+                    document.querySelector('.invoice_amount').value = Number(result.invoice_amount);
                     console.log(result);
                     localStorage.setItem('previewData', JSON.stringify(result));
                 })

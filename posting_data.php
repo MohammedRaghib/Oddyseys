@@ -11,6 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         handleAddHotel($pdo, $_POST);
     } elseif ($action === 'update_hotel') {
         handleUpdateHotel($pdo, $_POST);
+    } elseif ($action === 'add_fee') {
+        handleAddFee($pdo, $_POST);
     } else {
         http_response_code(400);
         echo json_encode(array('status' => 'error', 'message' => 'Invalid action specified.'));
@@ -121,4 +123,40 @@ function handleUpdateHotel($pdo, $postData)
     http_response_code(200);
     echo json_encode(array('status' => 'success', 'message' => 'Hotel updated successfully!'));
 }
-?>
+
+function handleAddFee($pdo, $postData)
+{
+    $input = file_get_contents('php://input');
+    $postData = json_decode($input, true);
+    echo $input;
+
+    $park_id = isset($postData['park_id']) ? $postData['park_id'] : array();
+    $fees_name = isset($postData['fees_name']) ? $postData['fees_name'] : '';
+    $rate = isset($postData['rate']) ? $postData['rate'] : 0;
+
+    if(empty($park_id) || empty($fees_name) || empty($rate)){
+        http_response_code(400);
+        echo json_encode(array('status' => 'error', 'message' => 'Invalid input data.'));
+        return;
+    }
+
+    $pdo->beginTransaction();
+
+    try {
+        $query = 'INSERT INTO park_special_fees (park_id, fees_name, currency, rate) VALUES (:park, :fees_name, USD, :rate)';
+        $stmt = $pdo->prepare($query);
+        $stmt->execute(array(
+            ':park' => $park_id,
+            ':fees_name' => $fees_name,
+            ':rate' => $rate,
+        ));
+
+        $pdo->commit();
+        http_response_code(200);
+        echo json_encode(array('status' => 'success', 'message' => 'Fees added successfully!'));
+    } catch (PDOException $e) {
+        $pdo->rollBack();
+        http_response_code(500);
+        echo json_encode(array('status' => 'error', 'message' => 'Failed to add the fees. Error: ' . $e->getMessage()));
+    }
+}

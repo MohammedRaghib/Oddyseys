@@ -31,7 +31,7 @@
     total days * car hire
     special fees (if any)
 */
-/* Tables (In sqlite format):
+/* Tables (In sqlite format): 
     CREATE TABLE parks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
@@ -69,11 +69,11 @@
 
     CREATE TABLE hotel_rates (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        hotel_id INTEGER NOT NULL,
+        hotel INTEGER NOT NULL,
         start_date TEXT NOT NULL,
         end_date TEXT NOT NULL,
         rate REAL NOT NULL,
-        FOREIGN KEY (hotel_id) REFERENCES park_hotels(id) ON DELETE CASCADE
+        FOREIGN KEY (hotel) REFERENCES park_hotels(id) ON DELETE CASCADE
     );
 
     CREATE TABLE park_special_fees (
@@ -117,51 +117,60 @@
     ]
 } */
 
-$dbFile = './travel.db';
+$dbPath = './travel.db';
 
-try {
-    $pdo = new PDO("sqlite:" . $dbFile);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("SQLite database connection failed: " . $e->getMessage());
-}
-
+$pdo = new PDO('sqlite:' . $dbPath);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $people = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    
     $data = json_decode(file_get_contents('php://input'), true);
 
-    $people = $data['people'][0]; // Assuming only one entry in the people array
+    $people = $data['people'];
     $flight = $data['flight'];
-    $total = $data['total'];
     $profit = $data['profit'];
     $discount = $data['discount'];
-    $invoice_amount = $data['invoice_amount'];
     $parks = $data['parks'];
+
+
+    $total_cost_by_visitor_category = array_fill_keys(array_keys($people), 0);
 
     $output = [];
     foreach ($parks as $park) {
-        $output[] = get_cost_by_park($park['start_date'], $park['end_date'], $people, $park['extras'], $park['hotel'], $park['car_hire'], $park['park'], $park['hotel_name'], $park['park_name'], $pdo);
-    };
+        $output[] = get_cost_by_park($park['start_date'], $park['end_date'], $people, $park['extras'], $park['hotel'], $park['car_hire'], $park['park'], $park['hotel_name'], $park['park_name']);
+    }
 
     $everything_total = 0;
+    $people_count = array_sum($people);    
+   
+    foreach ($total_cost_by_visitor_category as $key => $value) {
+        $total_cost_by_visitor_category[$key] += $flight;
+    }
+    $flight = $flight * $people_count;
     $everything_total += $flight;
+
     foreach ($output as $item) {
         $everything_total += $item['total_cost'];
     }
 
+$output['total_cost'] = $everything_total;
+$invoice_amount = $everything_total * (1 + ($profit/100));
+$invoice_amount = (1-($discount/100))*$invoice_amount;
+
     $final_output = [
         'parks' => $output,
         'flight' => $flight,
-        'total' => $everything_total,
+        'total' => $output['total_cost'],
         'profit' => $profit,
         'discount' => $discount,
-        'invoice_amount' => $invoice_amount
+        'invoice_amount' => $invoice_amount,
+        'total_cost_by_visitor_category' => $total_cost_by_visitor_category,
     ];
 
-    // Redirect to the preview page (you might want to adjust this based on your frontend logic)
+    // Redirect to the preview page
     echo json_encode($final_output);
-    exit();
 }
 
 /**
@@ -198,7 +207,7 @@ function isDateInRange($start_md, $end_md, $check_md)
 }
 
 /**
- * Calculate the total cost of a trip to a park including park fees, hotel costs,
+ * Calculate the total cost of a trip to a park including park fees, hotel costs, 
  * concession fees, car hire, and extras based on the given parameters.
  *
  * @param string $start_date_str Start date of the trip in 'Y-m-d' format.
@@ -208,27 +217,25 @@ function isDateInRange($start_md, $end_md, $check_md)
  * @param int $hotel_id ID of the hotel for fetching hotel rates.
  * @param float $car_hire_per_day Cost of car hire per day.
  * @param int $park_id ID of the park for fetching park and concession fees.
- * @param string $hotel_name Name of the hotel (for output).
- * @param string $park_name Name of the park (for output).
- * @param PDO $pdo PDO database connection instance.
  *
  * @return array Associative array containing detailed breakdown of costs:
- * - 'park_id': ID of the park
- * - 'hotel_id': ID of the hotel
- * - 'start_date': Start date of the trip
- * - 'end_date': End date of the trip
- * - 'people_breakdown': Breakdown of people by category
- * - 'extras_breakdown': Breakdown of extra costs
- * - 'conservancy_fees': Total and per person type park fees
- * - 'hotel_cost': Total and per person per night hotel fees
- * - 'concession_fees': Total and per person type concession fees
- * - 'car_hire_cost': Total car hire cost
- * - 'extras_cost': Total extra costs
- * - 'total_cost': Total cost of the trip
- * - 'total_cost_by_visitor_category': Cost breakdown by visitor type
+ *               - 'park_id': ID of the park
+ *               - 'hotel_id': ID of the hotel
+ *               - 'start_date': Start date of the trip
+ *               - 'end_date': End date of the trip
+ *               - 'people_breakdown': Breakdown of people by category
+ *               - 'extras_breakdown': Breakdown of extra costs
+ *               - 'conservancy_fees': Total and per person type park fees
+ *               - 'hotel_cost': Total and per person per night hotel fees
+ *               - 'concession_fees': Total and per person type concession fees
+ *               - 'car_hire_cost': Total car hire cost
+ *               - 'extras_cost': Total extra costs
+ *               - 'total_cost': Total cost of the trip
  */
-function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hotel_id, $car_hire_per_day, $park_id, $hotel_name, $park_name, $pdo)
+function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hotel_id, $car_hire_per_day, $park_id, $hotel_name, $park_name)
 {
+    global $pdo;
+
     $start = new DateTime($start_date_str);
     $end = new DateTime($end_date_str);
     $days = $start->diff($end)->days + 1;
@@ -238,14 +245,13 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
     $total_hotel_cost = 0;
     $total_concession_cost = 0;
     $total_specialfees_cost = 0;
-    $total_car_hire_cost = $car_hire_per_day * array_sum($people) * $days;
-    $total_extras_cost = $extras;
+    $total_car_hire_cost = 0;
+    $total_extras_cost = 0;
     $cost_by_person_category = array_fill_keys(array_keys($people), 0);
     $concession_cost_by_person_category = array_fill_keys(array_keys($people), 0);
-    $total_cost_by_visitor_category = array_fill_keys(array_keys($people), 0);
+    global $total_cost_by_visitor_category;
+   
     $hotel_cost_per_night = 0;
-    $special_fees_name = '';
-    $special_fees_rate = 0;
 
     # Fetch rates from the database
     $sql = "SELECT
@@ -265,7 +271,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
             FROM
                 park_conservation_fees pcf
             LEFT JOIN
-                hotel_rates hr ON hr.hotel_id = :hotel_id
+                hotel_rates hr ON hr.hotel = :hotel_id
             LEFT JOIN
                 hotel_concession_fees hcf ON hcf.park_id = :park_id AND hcf.visitor_type = pcf.visitor_type
             LEFT JOIN
@@ -274,34 +280,43 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
                 pcf.park_id = :park_id";
 
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':park_id', $park_id, PDO::PARAM_INT);
-    $stmt->bindParam(':hotel_id', $hotel_id, PDO::PARAM_INT);
-    $stmt->execute();
+    $stmt->execute([':park_id' => $park_id, ':hotel_id' => $hotel_id]);
     $rates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $special_fees_name = '';
+    $special_fees_rate = 0;
 
     # Calculate costs per day
     $current_date = clone $start;
+
+    #print_r($rates);
     for ($i = 0; $i < $days; $i++) {
         $current_month_day = $current_date->format("m-d");
-
         # 1. Conservancy Fees
+        $pcf_values = array();
         foreach ($rates as $rate_data) {
-            if (isset($rate_data['pcf_visitor_type']) && isset($people[$rate_data['pcf_visitor_type']])) {
+            if (isset($rate_data['pcf_visitor_type']) && isset($people[$rate_data['pcf_visitor_type']]) && !isset($pcf_values[$rate_data['pcf_visitor_type']])) {
                 if (isDateInRange(
                     (new DateTime($rate_data['pcf_start_date']))->format("m-d"),
                     (new DateTime($rate_data['pcf_end_date']))->format("m-d"),
                     $current_month_day
-                )) {
+                )) {   
+                    $pcf_values[$rate_data['pcf_visitor_type']]='yes';                 
+                    #echo $rate_data['pcf_visitor_type'];
+                    #echo $total_cost_by_visitor_category[$rate_data['pcf_visitor_type']];
                     $cost_by_person_category[$rate_data['pcf_visitor_type']] += ($rate_data['pcf_rate'] * $people[$rate_data['pcf_visitor_type']]);
                     $total_park_cost += ($rate_data['pcf_rate'] * $people[$rate_data['pcf_visitor_type']]);
-                    $total_cost_by_visitor_category[$rate_data['pcf_visitor_type']] += ($rate_data['pcf_rate'] * $people[$rate_data['pcf_visitor_type']]);
+                    $total_cost_by_visitor_category[$rate_data['pcf_visitor_type']] += $rate_data['pcf_rate'];
+                    #echo $total_cost_by_visitor_category[$rate_data['pcf_visitor_type']];
                 }
             }
         }
         $current_date->modify('+1 day');
     }
+    #print_r($total_cost_by_visitor_category);
 
     # 2. Hotel Cost (per night)
+    $hc_values = array();
     foreach ($rates as $rate_data) {
         if (isset($rate_data['hotel_rate'])) {
             if (isDateInRange(
@@ -311,44 +326,90 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
             )) {
                 $hotel_cost_per_night = $rate_data['hotel_rate'] * array_sum($people);
                 $total_hotel_cost = $hotel_cost_per_night * $nights;
+                foreach ($total_cost_by_visitor_category as $key => $value) {
+                      if (!isset($hc_values[$key])){
+                        $hc_values[$key]= "yes";
+                        $total_cost_by_visitor_category[$key] += $rate_data['hotel_rate'] * $nights;
+                      }
+                }                
                 break; // Assuming only one matching hotel rate
             }
         }
     }
 
+    #print_r($total_cost_by_visitor_category);
+
     # 3. Hotel Concession (per night)
     $current_night = clone $start;
     for ($i = 0; $i < $nights; $i++) {
         $current_month_day_night = $current_night->format("m-d");
+        $hcf_values = array();
         foreach ($rates as $rate_data) {
-            if (isset($rate_data['hcf_visitor_type']) && isset($people[$rate_data['hcf_visitor_type']])) {
+            if (isset($rate_data['hcf_visitor_type']) && isset($people[$rate_data['hcf_visitor_type']]) && !isset($hcf_values[$rate_data['hcf_visitor_type']])) {
                 if (isDateInRange(
                     (new DateTime($rate_data['hcf_start_date']))->format("m-d"),
                     (new DateTime($rate_data['hcf_end_date']))->format("m-d"),
                     $current_month_day_night
                 )) {
+                    $hcf_values[$rate_data['hcf_visitor_type']]='yes';
                     $concession_cost_by_person_category[$rate_data['hcf_visitor_type']] += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
                     $total_concession_cost += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
-                    $total_cost_by_visitor_category[$rate_data['hcf_visitor_type']] += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
+                    $total_cost_by_visitor_category[$rate_data['hcf_visitor_type']] += $rate_data['hcf_rate'];
                 }
             }
         }
         $current_night->modify('+1 day');
-    }
+    }    
+
+    #print_r($total_cost_by_visitor_category);
+
 
     # 4. Park special fees (per day)
-    foreach ($rates as $rate_data) {
-        if (isset($rate_data['special_fees_name'])) {
-            $special_fees_name = $rate_data['special_fees_name'];
-            $special_fees_rate = $rate_data['special_fees_rate'];
-            $total_specialfees_cost += ($special_fees_rate * array_sum($people) * $days);
-            break; // Assuming only one special fee per park for now
-        }
+
+    
+
+    for ($i = 0; $i < $days; $i++) {
+            $special_values = array();  
+            if (isset($rate_data['special_fees_name'])) {
+                    $total_specialfees_cost += ($rate_data['special_fees_rate'] * array_sum($people)); 
+                    foreach ($total_cost_by_visitor_category as $key => $value) {
+                        if (!isset($special_values[$key])){
+                            $special_values[$key]='yes';
+                            $total_cost_by_visitor_category[$key] += $rate_data['special_fees_rate'];
+                        }
+                    }               
+            }
     }
+
+    #print_r($total_cost_by_visitor_category);
+
+    #echo "Extras : ";
+
+    # 5. Extras 
+    if (isset($extras)) {
+        $total_extras_cost += ($extras * array_sum($people));  
+        foreach ($total_cost_by_visitor_category as $key => $value) {
+            $total_cost_by_visitor_category[$key] += $extras;
+        }              
+    }
+
+    #print_r($total_cost_by_visitor_category);
+
+     # 6. Car Hire
+    for ($i = 0; $i < $days; $i++) {
+            if (isset($car_hire_per_day)) {
+                    $total_car_hire_cost += ($car_hire_per_day * array_sum($people));  
+                    foreach ($total_cost_by_visitor_category as $key => $value) {
+                         $total_cost_by_visitor_category[$key] += $car_hire_per_day;
+                    }              
+            }
+    }
+
+    #print_r($total_cost_by_visitor_category);
 
     $total_cost = $total_park_cost + $total_hotel_cost + $total_concession_cost + $total_car_hire_cost + $total_extras_cost + $total_specialfees_cost;
     $total_people = array_sum($people);
-    if ($total_people <= 0) {
+    if($total_people <= 0) {
         $total_people = 1;
     }
 
@@ -366,16 +427,16 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
         ),
         'hotel_cost' => array(
             'total' => $total_hotel_cost,
-            'per_night_per_person' => $nights > 0 && $total_people > 0 ? round($hotel_cost_per_night / $total_people, 2) : 0,
+            'per_night_per_person' => $hotel_cost_per_night / $total_people,
         ),
         'concession_fees' => array(
             'total' => $total_concession_cost,
             'by_person_type' => $concession_cost_by_person_category
         ),
-        'special_fees' => array(
+        'special_fees'=> array(
             'total' => $total_specialfees_cost,
             'name' => $special_fees_name,
-            'per_day_per_person' => $days > 0 && $total_people > 0 ? round($special_fees_rate, 2) : 0, // Assuming rate is per person per day if special fee exists
+            'per_day_per_person' => $total_specialfees_cost / $total_people,
         ),
         'car_hire_cost' => $total_car_hire_cost,
         'extras_cost' => $total_extras_cost,
@@ -386,15 +447,3 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
     return $itinerary_cost;
 }
 
-$start_date_str = "2025-01-01";
-$end_date_str = "2025-01-02";
-$people = array(
-    'Non-EA-Adult' => 2,
-    'Non-EA-Child' => 2,
-);
-$extras = 100;
-$hotel_id = 523;
-$car_hire_per_day = 100;
-$park_id = 1;
-$cost = get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hotel_id, $car_hire_per_day, $park_id, 'Meru View Lodge', 'Arusha National Park', $pdo);
-print_r($cost);
