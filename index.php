@@ -299,7 +299,7 @@
                 <span>Invoice amount:</span>
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
-            <a href="preview.php" target="_blank">Show Preview</a>
+            <a href="#" onclick="openInNewTab()">Show Preview</a>
         </section>
         <section class="preview">
             <button class="closePreview" onclick="openPreview(false)">❌</button>
@@ -358,14 +358,17 @@
                 hotelList.appendChild(div);
             });
         };
-
+        let results = {};
         const postData = async () => {
             const people = {};
             const rows = document.querySelectorAll('.people tbody tr');
             rows.forEach(row => {
                 const inputs = row.querySelectorAll('input');
                 inputs.forEach(input => {
-                    people[input.name] = Number(input.value) || 0;
+                    const inputValue = Number(input.value);
+                    if (!isNaN(inputValue) && inputValue > 0) {
+                        people[input.name] = inputValue;
+                    }
                 });
             });
             const flight = Number(document.querySelector('.flight').value || 0);
@@ -420,8 +423,7 @@
                     document.querySelector('.profit').value = Number(result.profit);
                     document.querySelector('.discount').value = Number(result.discount);
                     document.querySelector('.invoice_amount').value = Number(result.invoice_amount);
-                    console.log(result);
-                    localStorage.setItem('previewData', JSON.stringify(result));
+                    results = result;
                 })
                 .catch((e) => {
                     console.error('Error fetching data:', e);
@@ -570,6 +572,11 @@
                     hotel.style.display = 'none';
                 }
             });
+        }
+
+        const openInNewTab = () => {
+            const queryString = encodeURIComponent(JSON.stringify(results));
+            window.open(`preview.php?data=${queryString}`, '_blank');
         }
     </script>
 </body>

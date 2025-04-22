@@ -146,7 +146,10 @@
                 non_ea_citizen_child: 1400
             }
         */
-        const data = JSON.parse(localStorage.getItem('previewData') || "{}");
+        const urlParams = new URLSearchParams(window.location.search);
+        const data = JSON.parse(decodeURIComponent(urlParams.get("data")));
+
+        console.log(data);
 
         if (data.total_cost_by_visitor_category) {
             Object.entries(data.total_cost_by_visitor_category).forEach(([key, value]) => {
