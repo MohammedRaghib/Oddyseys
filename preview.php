@@ -230,7 +230,7 @@
                 let container = document.createElement('div');
                 let park_name = document.createElement('h2');
 
-                park_name.textContent = value.park_name;
+                park_name.textContent = `${value.park_name} from ${value.start_date} to ${value.end_date}`;
                 container.appendChild(park_name);
                 container.classList.add('parkContainer');
 
