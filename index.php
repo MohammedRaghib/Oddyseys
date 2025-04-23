@@ -299,7 +299,7 @@
                 <span>Invoice amount:</span>
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
-            <a href="#" onclick="openInNewTab()">Show Preview</a>
+            <button onclick="openInNewTab()">Show Preview</button>
         </section>
         <section class="preview">
             <button class="closePreview" onclick="openPreview(false)">❌</button>
