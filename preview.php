@@ -31,8 +31,8 @@
         }
 
         .breakdown {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 20px;
             margin-bottom: 20px;
             padding: 20px;
@@ -82,7 +82,11 @@
             font-weight: 500;
         }
 
-        .flight,
+        .subtotal{
+            font-weight: bold;
+            font-size: 30px;
+        }
+
         .overall_total {
             display: block;
             margin-top: 20px;
@@ -91,7 +95,6 @@
             text-align: center;
         }
 
-        .flight input[type="number"],
         .overall_total input[type="number"] {
             font-size: 1.1em;
             font-weight: bold;
@@ -104,9 +107,24 @@
             display: inline-block;
             text-align: center;
         }
+
         .special_fees {
             border-top: 1px solid black;
             padding: 5px;
+        }
+
+        .other_info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 10px;
+        }
+
+        .other_info input {
+            background-color: rgba(244, 244, 244, 0.85);
         }
     </style>
 </head>
@@ -121,8 +139,15 @@
             <span class="note">This is the total cost for each visitor type</span>
         </section>
 
-        <span class="flight">Flight = <input type="number" name="flight" id="flight" disabled></span>
-        <span class="overall_total">TOTAL = <input type="number" name="total" id="total" disabled></span>
+        <section class="other_info">
+            <span class="flight">Flight = <input type="number" name="flight" id="flight" disabled></span>
+            <span class="profit">Profit = <input type="number" name="profit" id="profit" disabled></span>
+            <span class="discount">Discount = <input type="number" name="discount" id="discount" disabled></span>
+            <span class="invoice_amount">Invoice amount = <input type="number" name="invoice_amount" id="invoice_amount" disabled></span>
+        </section>
+
+        <span class="overall_total">TOTAL ITINERNARY COST = <input type="number" name="total" id="total" disabled></span>
+
     </main>
     <script>
         /* JSON data format gotten from index.php
@@ -198,12 +223,19 @@
 
         const calculateSum = (obj) => Object.values(obj).reduce((sum, num) => sum + num, 0);
 
+        let mainFragment = document.createDocumentFragment();
+
         Object.entries(data.parks).forEach(([key, value]) => {
             if (key !== 'total_cost') {
                 let container = document.createElement('div');
+                let park_name = document.createElement('h2');
+
+                park_name.textContent = value.park_name;
+                container.appendChild(park_name);
                 container.classList.add('parkContainer');
 
                 let fragment = document.createDocumentFragment();
+
                 Object.entries(value.people_breakdown).forEach(([key2, value2]) => {
                     let total_people = calculateSum(value.people_breakdown);
                     let wrapper_div = document.createElement('div');
@@ -214,12 +246,23 @@
                     let car_hire = document.createElement('span');
                     let extras_cost = document.createElement('span');
 
+                    let subtotal = document.createElement('span');
+                    subtotal.classList.add('subtotal');
+                    let fees = {
+                        conservancy_fees: value.conservancy_fees?.by_person_type[key2] || 0,
+                        hotel_cost: value.hotel_cost?.per_night_per_person * value2 || 0,
+                        concession_fees: value.concession_fees?.by_person_type[key2] || 0,
+                        car_hire: (value.car_hire_cost / total_people) * value2 || 0,
+                        extras_cost: (value.extras_cost / total_people) * value2 || 0
+                    }
+
                     title.textContent = `${Formatted_people[key2]} (${value.park_name})`;
-                    conservancy_fees.textContent = `Conservancy Fees: ${value.conservancy_fees?.by_person_type[key2] || 0}`;
-                    hotel_cost.textContent = `Hotel Cost: ${value.hotel_cost?.per_night_per_person * value2 || 0}`;
-                    concession_fees.textContent = `Concession Fees: ${value.concession_fees?.by_person_type[key2] || 0}`;
-                    car_hire.textContent = `Car Hire: ${(value.car_hire_cost / total_people) * value2 || 0}`;
-                    extras_cost.textContent = `Extra Fee: ${(value.extras_cost / total_people) * value2 || 0}`;
+                    conservancy_fees.textContent = `Conservancy Fees: ${fees.conservancy_fees}`;
+                    hotel_cost.textContent = `Hotel Cost: ${fees.hotel_cost}`;
+                    concession_fees.textContent = `Concession Fees: ${fees.concession_fees}`;
+                    car_hire.textContent = `Car Hire: ${fees.car_hire}`;
+                    extras_cost.textContent = `Extra Fee: ${fees.extras_cost}`;
+                    subtotal.textContent = `Subtotal: ${calculateSum(fees)}`;
 
                     wrapper_div.appendChild(title);
                     wrapper_div.appendChild(conservancy_fees);
@@ -227,30 +270,36 @@
                     wrapper_div.appendChild(concession_fees);
                     wrapper_div.appendChild(car_hire);
                     wrapper_div.appendChild(extras_cost);
+                    wrapper_div.appendChild(subtotal);
 
                     fragment.appendChild(wrapper_div);
-
                 });
 
                 let special_fees = document.createElement('span');
                 special_fees.classList.add('special_fees');
-                special_fees.textContent = `Special Fees =  ${value.special_fees?.name || ''} : ${value.special_fees?.total || 0}`;
+                special_fees.textContent = `Special Fees =  ${value.special_fees?.total > 0 ? value.special_fees?.name + ' : ' + value.special_fees?.total : 'No special fees applied' }`;
                 container.appendChild(fragment);
                 container.appendChild(special_fees);
-                document.querySelector('.breakdown').appendChild(container);
+
+                mainFragment.appendChild(container);
             }
         });
+
+        document.querySelector('.breakdown').appendChild(mainFragment);
 
         if (data.total_cost_by_visitor_category) {
             Object.entries(data.total_cost_by_visitor_category).forEach(([key, value]) => {
                 const div = document.createElement('div');
-                div.textContent = `${key}: ${value}`;
+                div.textContent = `Cost For ${Formatted_people[key]}: ${value}`;
                 document.querySelector('.sub_total_people').appendChild(div);
             });
         }
 
         document.querySelector('#flight').value = data.flight || 0;
         document.querySelector('#total').value = data.total || 0;
+        document.querySelector('#profit').value = data.profit || 0;
+        document.querySelector('#discount').value = data.discount || 0;
+        document.querySelector('#invoice_amount').value = data.invoice_amount || 0;
     </script>
 </body>
 
