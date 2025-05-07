@@ -237,7 +237,6 @@
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Hotel</th>
-                        <th>Hotel Rate In USD Per Person Per Night</th>
                         <th>Car Hire In USD Per Person Per Day</th>
                         <th>Extra Fee In USD Per Person</th>
                         <th>Actions</th>
@@ -249,7 +248,6 @@
                         <td><input type="date" class="start_date" name="start_date" required></td>
                         <td><input type="date" class="end_date" name="end_date" required></td>
                         <td class="double"><input type="text" class="hotel" name="hotel" disabled required><button class="openHotels" onclick="openhotels(this.closest('tr').dataset.id, true)">Select Hotel</button></td>
-                        <td><input type="number" class="hotel_rate" step='0.01' min=0 name="hotel_rate" required></td>
                         <td><input type="number" class="car_hire" min=0 name="car_hire" required></td>
                         <td><input type="number" class="extras" step='0.01' min=0 name="extras" required></td>
                         <td><button class="remove-row" onclick="removeRow(this)">Remove</button></td>
@@ -392,7 +390,6 @@
                     end_date: row.querySelector('input[name="end_date"]').value || '',
                     hotel: Number(row.querySelector('input[name="hotel"]').dataset.id || 0),
                     hotel_name: row.querySelector('input[name="hotel"]').value || '',
-                    hotel_rate: Number(row.querySelector('input[name="hotel_rate"]').value || 0),
                     days: days,
                     car_hire: Number(row.querySelector('input[name="car_hire"]').value || 0),
                     extras: Number(row.querySelector('input[name="extras"]').value || 0),
@@ -409,7 +406,7 @@
                 invoice_amount,
                 parks
             };
-            console.log(data);
+            // console.log(data);
             const response = await fetch('get_cost.php', {
                     method: 'POST',
                     headers: {
@@ -419,6 +416,7 @@
                 })
                 .then((response) => response.json())
                 .then((result) => {
+                    // console.table(result.used_hcf_rates)
                     document.querySelector('.total').value = result.total;
                     document.querySelector('.profit').value = Number(result.profit);
                     document.querySelector('.discount').value = Number(result.discount);

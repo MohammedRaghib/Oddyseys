@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Range Checker</title>
+    <script>
+        function isDateInRange(start_md, end_md, check_md) {
+            const year = "2000"; // Fixed year
+            const startDate = new Date(`${year}-${start_md}`);
+            const endDate = new Date(`${year}-${end_md}`);
+            const checkDate = new Date(`${year}-${check_md}`);
+
+            if (endDate < startDate) {
+                return checkDate >= startDate || checkDate <= endDate;
+            } else {
+                return checkDate >= startDate && checkDate <= endDate;
+            }
+        }
+
+        function checkDateRange() {
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+            const checkDate = document.getElementById("checkDate").value;
+
+            if (startDate && endDate && checkDate) {
+                // Extract MM-DD from YYYY-MM-DD format
+                const start_md = startDate.substring(5);
+                const end_md = endDate.substring(5);
+                const check_md = checkDate.substring(5);
+
+                const result = isDateInRange(start_md, end_md, check_md);
+                document.getElementById("result").innerText = result 
+                    ? "✅ The date is within the range!" 
+                    : "❌ The date is NOT within the range.";
+            } else {
+                document.getElementById("result").innerText = "⚠️ Please enter all dates.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Date Range Checker</h2>
+    <label for="startDate">Start Date:</label>
+    <input type="date" id="startDate"><br><br>
+
+    <label for="endDate">End Date:</label>
+    <input type="date" id="endDate"><br><br>
+
+    <label for="checkDate">Check Date:</label>
+    <input type="date" id="checkDate"><br><br>
+
+    <button onclick="checkDateRange()">Check</button>
+
+    <p id="result"></p>
+</body>
+</html>

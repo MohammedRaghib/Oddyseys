@@ -341,6 +341,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
 
     # 3. Hotel Concession (per night)
     $current_night = clone $start;
+    // $valid_hcf_values = array();
     for ($i = 0; $i < $nights; $i++) {
         $current_month_day_night = $current_night->format("m-d");
         $hcf_values = array();
@@ -351,6 +352,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
                     (new DateTime($rate_data['hcf_end_date']))->format("m-d"),
                     $current_month_day_night
                 )) {
+                    // array_push($valid_hcf_values, $rate_data);
                     $hcf_values[$rate_data['hcf_visitor_type']]='yes';
                     $concession_cost_by_person_category[$rate_data['hcf_visitor_type']] += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
                     $total_concession_cost += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
@@ -407,7 +409,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
 
     #print_r($total_cost_by_visitor_category);
 
-    $total_cost = $total_park_cost + $total_hotel_cost + $total_concession_cost + $total_car_hire_cost + $total_extras_cost + $total_specialfees_cost;
+    $total_cost = ($total_park_cost * 1.18) + $total_hotel_cost + ($total_concession_cost * 1.18) + $total_car_hire_cost + $total_extras_cost + $total_specialfees_cost;
     $total_people = array_sum($people);
     if($total_people <= 0) {
         $total_people = 1;
@@ -422,7 +424,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
         'end_date' => $end_date_str,
         'people_breakdown' => $people,
         'conservancy_fees' => array(
-            'total' => $total_park_cost,
+            'total' => $total_park_cost * 1.18,
             'by_person_type' => $cost_by_person_category
         ),
         'hotel_cost' => array(
@@ -430,7 +432,7 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
             'per_night_per_person' => $hotel_cost_per_night / $total_people,
         ),
         'concession_fees' => array(
-            'total' => $total_concession_cost,
+            'total' => $total_concession_cost * 1.18,
             'by_person_type' => $concession_cost_by_person_category
         ),
         'special_fees'=> array(
@@ -438,10 +440,11 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
             'name' => $special_fees_name,
             'per_day_per_person' => $total_specialfees_cost / $total_people,
         ),
+        // 'used_hcf_rates' => $valid_hcf_values,
         'car_hire_cost' => $total_car_hire_cost,
         'extras_cost' => $total_extras_cost,
         'total_cost' => $total_cost,
-        'total_cost_by_visitor_category' => $total_cost_by_visitor_category
+        'total_cost_by_visitor_category' => $total_cost_by_visitor_category,
     );
 
     return $itinerary_cost;

@@ -146,7 +146,7 @@
             <span class="invoice_amount">Invoice amount = <input type="number" name="invoice_amount" id="invoice_amount" disabled></span>
         </section>
 
-        <span class="overall_total">TOTAL ITINERNARY COST = <input type="number" name="total" id="total" disabled></span>
+        <span class="overall_total">TOTAL ITINERNARY COST (ALL TAXES INCLUDED) = <input type="number" name="total" id="total" disabled></span>
 
     </main>
     <script>
@@ -229,9 +229,12 @@
             if (key !== 'total_cost') {
                 let container = document.createElement('div');
                 let park_name = document.createElement('h2');
+                let hotel_name = document.createElement('h2');
 
                 park_name.textContent = `${value.park_name} from ${value.start_date} to ${value.end_date}`;
+                hotel_name.textContent = `${value.hotel_name}`;
                 container.appendChild(park_name);
+                container.appendChild(hotel_name);
                 container.classList.add('parkContainer');
 
                 let fragment = document.createDocumentFragment();
@@ -256,7 +259,7 @@
                         extras_cost: (value.extras_cost / total_people) * value2 || 0
                     }
 
-                    title.textContent = `${Formatted_people[key2]} (${value.park_name})`;
+                    title.textContent = `${Formatted_people[key2]}`;
                     conservancy_fees.textContent = `Conservancy Fees: ${fees.conservancy_fees}`;
                     hotel_cost.textContent = `Hotel Cost: ${fees.hotel_cost}`;
                     concession_fees.textContent = `Concession Fees: ${fees.concession_fees}`;
@@ -276,10 +279,21 @@
                 });
 
                 let special_fees = document.createElement('span');
+                let total_conservancy_fees = document.createElement('span');
+                let total_concession_fees = document.createElement('span');
                 special_fees.classList.add('special_fees');
+                total_conservancy_fees.classList.add('total_conservancy_fees');
+                total_concession_fees.classList.add('total_concession_fees');
+
+                total_conservancy_fees.textContent = `Total Conservancy Fees (18% Tax included) = ${value.conservancy_fees?.total}`;
+                total_concession_fees.textContent = `Total Concession Fees (18% Tax included) = ${value.concession_fees?.total}`;
                 special_fees.textContent = `Special Fees =  ${value.special_fees?.total > 0 ? value.special_fees?.name + ' : ' + value.special_fees?.total : 'No special fees applied' }`;
+
                 container.appendChild(fragment);
+
                 container.appendChild(special_fees);
+                container.appendChild(total_conservancy_fees);
+                container.appendChild(total_concession_fees);
 
                 mainFragment.appendChild(container);
             }

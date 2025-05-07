@@ -41,3 +41,12 @@ CREATE TABLE hotel_rates (
     rate DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (hotel) REFERENCES park_hotels(id) ON DELETE CASCADE
 );
+
+CREATE TABLE park_special_fees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    park_id INT(11) NOT NULL,
+    fees_name VARCHAR(100) COLLATE latin1_swedish_ci NOT NULL,
+    currency ENUM('USD', 'KES', 'TZS') COLLATE latin1_swedish_ci NOT NULL,
+    rate DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (park_id) REFERENCES parks(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
