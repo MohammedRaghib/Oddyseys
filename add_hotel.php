@@ -503,11 +503,12 @@
                     const tbody = document.querySelector('#dynamic-entries tbody');
                     tbody.innerHTML = '';
 
-                    hotelInfo.ranges.forEach((range) => {
-                        const season = range.start_date && range.end_date ?
-                            getSeasonFromRange(range.start_date, range.end_date) :
-                            '';
-                        const newRow = `
+                    if (Object.keys(hotelInfo.ranges).length > 0) {
+                        hotelInfo.ranges.forEach((range) => {
+                            const season = range.start_date && range.end_date ?
+                                getSeasonFromRange(range.start_date, range.end_date) :
+                                '';
+                            const newRow = `
                             <tr class="entry">
                                 <td>
                                     <select name="season[]" class="select" data-id='${range.id}' required>
@@ -526,8 +527,24 @@
                                     <button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button>
                                 </td>
                             </tr>`;
-                        document.querySelector('#dynamic-entries tbody').innerHTML += newRow;
-                    });
+                            document.querySelector('#dynamic-entries tbody').innerHTML += newRow;
+                        });
+                    } else {
+                        tbody.innerHTML = `
+                        <tr class="entry">
+                            <td><select name="season[]" id="hotel_season" class="select" required>
+                                    <option value="">-SELECT SEASON-</option>
+                                    <option value="Low">Low season (01/04 - 31/05)</option>
+                                    <option value="Mid">Mid season (01/11 - 14/12)</option>
+                                    <option value="High1">High season (01/01 - 31/03)</option>
+                                    <option value="High2">High season (01/06 - 31/10)</option>
+                                    <option value="High3">High season (15/12 - 31/12)</option>
+                                </select></td>
+                            <td><input type="number" step="0.01" name="rate[]" id="hotel_rate" class="input" required></td>
+                            <td><button type="button" onclick="removeEntry(this)" class="remove-entry">Remove</button></td>
+                        </tr>`;
+                        console.log('No existing rates found');
+                    }
 
                     const current = document.getElementById('currentHotel');
                     current.textContent = document.querySelector(`.hotel${id} .hotel_name`).textContent || '';
