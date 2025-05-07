@@ -83,7 +83,7 @@
             margin-right: 10px;
         }
 
-        button {
+        button, a {
             background: linear-gradient(to right, #008080, #00b3b3);
             color: white;
             border: none;
@@ -298,6 +298,7 @@
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
             <button onclick="openInNewTab()">Show Preview</button>
+            <a href="add_hotel.php">Add Hotel Rates</a>
         </section>
         <section class="preview">
             <button class="closePreview" onclick="openPreview(false)">❌</button>
