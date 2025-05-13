@@ -106,3 +106,4 @@ INSERT INTO parks (name, country) VALUES ('Rumanyika-Karagwe National Park', 'ta
 INSERT INTO parks (name, country) VALUES ('Saanane Island National Park', 'tanzania');
 INSERT INTO parks (name, country) VALUES ('Ugalla River National Park', 'tanzania');
 INSERT INTO parks (name, country) VALUES ('Kigosi National Park', 'tanzania');
+INSERT INTO parks (name, country) VALUES ('Other Parks', 'tanzania');

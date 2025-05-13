@@ -284,14 +284,17 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
     $rates = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $elsesql = "SELECT
-                    *
+                    hcf.visitor_type AS hcf_visitor_type,
+                    hcf.start_date AS hcf_start_date,
+                    hcf.end_date AS hcf_end_date,
+                    hcf.rate AS hcf_rate
                 FROM
                     hotel_concession_fees hcf 
                 WHERE
                     hcf.park_id = :park_id";
 
     $elsestmt = $pdo->prepare($elsesql);
-    $elsestmt->execute([':park_id' => $park_id]);
+    $elsestmt->execute([':park_id' => 109]);
     $elserates = $elsestmt->fetchAll(PDO::FETCH_ASSOC);
 
 
@@ -355,25 +358,68 @@ function get_cost_by_park($start_date_str, $end_date_str, $people, $extras, $hot
     $current_night = clone $start;
     // $valid_hcf_values = array();
     for ($i = 0; $i < $nights; $i++) {
-        $current_month_day_night = $current_night->format("m-d");
-        $hcf_values = array();
-        foreach ($rates as $rate_data) {
-            if (isset($rate_data['hcf_visitor_type']) && isset($people[$rate_data['hcf_visitor_type']]) && !isset($hcf_values[$rate_data['hcf_visitor_type']])) {
-                if (isDateInRange(
-                    (new DateTime($rate_data['hcf_start_date']))->format("m-d"),
-                    (new DateTime($rate_data['hcf_end_date']))->format("m-d"),
-                    $current_month_day_night
-                )) {
-                    // array_push($valid_hcf_values, $rate_data);
-                    $hcf_values[$rate_data['hcf_visitor_type']] = 'yes';
-                    $concession_cost_by_person_category[$rate_data['hcf_visitor_type']] += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
-                    $total_concession_cost += ($rate_data['hcf_rate'] * $people[$rate_data['hcf_visitor_type']]);
-                    $total_cost_by_visitor_category[$rate_data['hcf_visitor_type']] += $rate_data['hcf_rate'];
+        $current_date = $current_night->format("m-d");
+        $processed_types = array();
+
+        foreach ($rates as $rate) {
+            $type = $rate['hcf_visitor_type'];
+            if (
+                isset($rate['hcf_rate']) && $rate['hcf_rate'] > 0 &&
+                isset($people[$type]) &&
+                !isset($processed_types[$type]) &&
+                isDateInRange(
+                    date("m-d", strtotime($rate['hcf_start_date'])),
+                    date("m-d", strtotime($rate['hcf_end_date'])),
+                    $current_date
+                )
+            ) {
+                $cost = $rate['hcf_rate'] * $people[$type];
+
+                if (!isset($concession_cost_by_person_category[$type])) {
+                    $concession_cost_by_person_category[$type] = 0;
                 }
+                if (!isset($total_cost_by_visitor_category[$type])) {
+                    $total_cost_by_visitor_category[$type] = 0;
+                }
+
+                $concession_cost_by_person_category[$type] += $cost;
+                $total_cost_by_visitor_category[$type] += $rate['hcf_rate'];
+                $total_concession_cost += $cost;
+
+                $processed_types[$type] = true;
             }
         }
+
+        // fallback loop: only for visitor types not already processed
+        foreach ($elserates as $rate) {
+            $type = $rate['hcf_visitor_type'];
+            if (
+                isset($people[$type]) &&
+                !isset($processed_types[$type]) &&
+                isDateInRange(
+                    date("m-d", strtotime($rate['hcf_start_date'])),
+                    date("m-d", strtotime($rate['hcf_end_date'])),
+                    $current_date
+                )
+            ) {
+                $cost = $rate['hcf_rate'] * $people[$type];
+
+                if (!isset($concession_cost_by_person_category[$type])) {
+                    $concession_cost_by_person_category[$type] = 0;
+                }
+                if (!isset($total_cost_by_visitor_category[$type])) {
+                    $total_cost_by_visitor_category[$type] = 0;
+                }
+
+                $concession_cost_by_person_category[$type] += $cost;
+                $total_cost_by_visitor_category[$type] += $rate['hcf_rate'];
+                $total_concession_cost += $cost;
+            }
+        }
+
         $current_night->modify('+1 day');
     }
+
 
     #print_r($total_cost_by_visitor_category);
 

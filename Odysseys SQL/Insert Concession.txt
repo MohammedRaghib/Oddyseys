@@ -217,3 +217,13 @@ INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, c
 INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(103, 'tz_resident_adult', '2000-01-01', '2000-12-31', 'USD', 25.00);
 INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(103, 'tz_resident_child', '2000-01-01', '2000-12-31', 'USD', 10.00);
 INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(103, 'tz_resident_infant', '2000-01-01', '2000-12-31', 'USD', 0.00);
+
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'ea_citizen_adult', '2000-01-01', '2000-12-31', 'TZS', 20000.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'ea_citizen_child', '2000-01-01', '2000-12-31', 'TZS', 5000.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'ea_citizen_infant', '2000-01-01', '2000-12-31', 'TZS', 0.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'non_ea_citizen_adult', '2000-01-01', '2000-12-31', 'USD', 25.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'non_ea_citizen_child', '2000-01-01', '2000-12-31', 'USD', 10.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'non_ea_citizen_infant', '2000-01-01', '2000-12-31', 'USD', 0.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'tz_resident_adult', '2000-01-01', '2000-12-31', 'USD', 25.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'tz_resident_child', '2000-01-01', '2000-12-31', 'USD', 10.00);
+INSERT INTO hotel_concession_fees(park_id, visitor_type, start_date, end_date, currency, rate) VALUES(109, 'tz_resident_infant', '2000-01-01', '2000-12-31', 'USD', 0.00);

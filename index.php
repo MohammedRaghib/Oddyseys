@@ -83,7 +83,7 @@
             margin-right: 10px;
         }
 
-        button, a {
+        .click {
             background: linear-gradient(to right, #008080, #00b3b3);
             color: white;
             border: none;
@@ -94,9 +94,10 @@
             font-size: 1rem;
             font-weight: bold;
             transition: background 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
         }
 
-        button:hover {
+        .click:hover {
             background: linear-gradient(to right, #00b3b3, #008080);
             transform: scale(1.05);
         }
@@ -244,17 +245,17 @@
                 </thead>
                 <tbody>
                     <tr data-id="1">
-                        <td class="double"><input type="text" class="park" name="park" disabled required><button class="openParks" onclick="openparks(this.closest('tr').dataset.id, this)">Select Park</button></td>
+                        <td class="double"><input type="text" class="park" name="park" disabled required><button class="openParks click" onclick="openparks(this.closest('tr').dataset.id, this)">Select Park</button></td>
                         <td><input type="date" class="start_date" name="start_date" required></td>
                         <td><input type="date" class="end_date" name="end_date" required></td>
-                        <td class="double"><input type="text" class="hotel" name="hotel" disabled required><button class="openHotels" onclick="openhotels(this.closest('tr').dataset.id, true)">Select Hotel</button></td>
+                        <td class="double"><input type="text" class="hotel" name="hotel" disabled required><button class="openHotels click" onclick="openhotels(this.closest('tr').dataset.id, true)">Select Hotel</button></td>
                         <td><input type="number" class="car_hire" min=0 name="car_hire" required></td>
                         <td><input type="number" class="extras" step='0.01' min=0 name="extras" required></td>
-                        <td><button class="remove-row" onclick="removeRow(this)">Remove</button></td>
+                        <td><button class="remove-row click" onclick="removeRow(this)">Remove</button></td>
                     </tr>
                 </tbody>
             </table>
-            <button class="add-row" onclick="addRow()">Add Row</button>
+            <button class="add-row click" onclick="addRow()">Add Row</button>
             <table class="people">
                 <thead>
                     <tr>
@@ -297,11 +298,11 @@
                 <span>Invoice amount:</span>
                 <input type="number" step="0.01" min=0 class="invoice_amount" name="invoice_amount">
             </aside>
-            <button onclick="openInNewTab()">Show Preview</button>
-            <a href="add_hotel.php">Add Hotel Rates</a>
+            <button onclick="openInNewTab()" class="click">Show Preview</button>
+            <a href="add_hotel.php" class="click">Add Hotel Rates</a>
         </section>
         <section class="preview">
-            <button class="closePreview" onclick="openPreview(false)">❌</button>
+            <button class="closePreview click" onclick="openPreview(false)">❌</button>
             <h2>Trip Cost Preview</h2>
             <div class="preview-content">
                 <p>This section will display a summary of the calculated costs.</p>
@@ -333,30 +334,43 @@
         });
 
         const initial_load = async () => {
-            const response = await fetch('get_parks.php?for=hotelpage');
-            const data = await response.json();
-            const parksList = document.querySelector('.parkList');
-            const hotelList = document.querySelector('.hotelList');
+            try {
+                const response = await fetch('get_parks.php?for=hotelpage');
+                const data = await response.json();
+                const parksList = document.querySelector('.parkList');
+                const hotelList = document.querySelector('.hotelList');
 
-            data.parks.forEach((park) => {
-                let div = document.createElement('div');
-                div.classList.add('indiviualPark');
-                div.textContent = park.name;
-                div.dataset.id = park.id;
-                div.addEventListener('click', (event) => selectPark(event));
-                parksList.appendChild(div);
-            });
+                const parkFragment = document.createDocumentFragment();
+                const hotelFragment = document.createDocumentFragment();
 
-            data.hotels.forEach((hotel) => {
-                let div = document.createElement('div');
-                div.classList.add('indiviualHotel');
-                div.textContent = hotel.hotel;
-                div.dataset.id = hotel.id;
-                div.dataset.parkId = hotel.park_id;
-                div.addEventListener('click', (event) => selectHotel(event));
-                hotelList.appendChild(div);
-            });
+                data.parks.forEach((park) => {
+                    if (park.id != 109) {
+                        const div = document.createElement('div');
+                        div.classList.add('indiviualPark');
+                        div.textContent = park.name;
+                        div.dataset.id = park.id;
+                        div.addEventListener('click', (event) => selectPark(event));
+                        parkFragment.appendChild(div);
+                    }
+                });
+
+                data.hotels.forEach((hotel) => {
+                    const div = document.createElement('div');
+                    div.classList.add('indiviualHotel');
+                    div.textContent = hotel.hotel;
+                    div.dataset.id = hotel.id;
+                    div.dataset.parkId = hotel.park_id;
+                    div.addEventListener('click', (event) => selectHotel(event));
+                    hotelFragment.appendChild(div);
+                });
+
+                parksList.appendChild(parkFragment);
+                hotelList.appendChild(hotelFragment);
+            } catch (error) {
+                console.error('Error loading parks/hotels:', error);
+            }
         };
+
         let results = {};
         const postData = async () => {
             const people = {};
