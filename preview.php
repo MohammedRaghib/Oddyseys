@@ -136,7 +136,7 @@
         </section>
 
         <section class="sub_total_people">
-            <span class="note">This is the total cost for each visitor type</span>
+            <span class="note">This is the total cost for each visitor type (without taxes)</span>
         </section>
 
         <section class="other_info">
