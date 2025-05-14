@@ -268,3 +268,12 @@ INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date,
 INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (108, 'tz_resident_child', '2000-01-01', '2000-12-31', 'USD', 20);
 INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (108, 'tz_resident_infant', '2000-01-01', '2000-12-31', 'USD', 0);
 
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'ea_citizen_adult', '2000-01-01', '2000-12-31', 'TZS', 11800);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'ea_citizen_child', '2000-01-01', '2000-12-31', 'TZS', 2360);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'ea_citizen_infant', '2000-01-01', '2000-12-31', 'TZS', 0);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'non_ea_citizen_adult', '2000-01-01', '2000-12-31', 'USD', 70.8);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'non_ea_citizen_child', '2000-01-01', '2000-12-31', 'USD', 23.6);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'non_ea_citizen_infant', '2000-01-01', '2000-12-31', 'USD', 0);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'tz_resident_adult', '2000-01-01', '2000-12-31', 'USD', 35.4);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'tz_resident_child', '2000-01-01', '2000-12-31', 'USD', 11.8);
+INSERT INTO park_conservation_fees (park_id, visitor_type, start_date, end_date, currency, rate) VALUES (69, 'tz_resident_infant', '2000-01-01', '2000-12-31', 'USD', 0);
