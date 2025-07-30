@@ -4,18 +4,133 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Date Range Checker</title>
-    <script>
-        function isDateInRange(start_md, end_md, check_md) {
-            const year = "2000"; // Fixed year
-            const startDate = new Date(`${year}-${start_md}`);
-            const endDate = new Date(`${year}-${end_md}`);
-            const checkDate = new Date(`${year}-${check_md}`);
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --container-bg-color: #16213e;
+            --text-color: #e9e9e9;
+            --input-bg-color: #262c4c;
+            --input-border-color: #3b426f;
+            --button-bg-color: #0f3460;
+            --button-hover-color: #1b5690;
+            --success-color: #34d399;
+            --error-color: #ef4444;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
 
-            if (endDate < startDate) {
-                return checkDate >= startDate || checkDate <= endDate;
-            } else {
-                return checkDate >= startDate && checkDate <= endDate;
-            }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--container-bg-color);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: var(--text-color);
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1rem;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--input-border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--input-bg-color);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+            -webkit-appearance: none;
+            appearance: none;
+            cursor: pointer;
+            color-scheme: dark;
+        }
+
+        input[type="date"]:focus {
+            outline: none;
+            border-color: var(--button-bg-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--button-bg-color);
+            color: var(--text-color);
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-color);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #result {
+            margin-top: 25px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            min-height: 24px;
+        }
+
+        .success {
+            color: var(--success-color);
+        }
+
+        .error {
+            color: var(--error-color);
+        }
+    </style>
+    <script>
+        function isDateInRange(startDate, endDate, checkDate) {
+            // Converts the input strings to Date objects for comparison.
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const check = new Date(checkDate);
+
+            // Returns true if the check date is between the start and end dates (inclusive).
+            return check >= start && check <= end;
         }
 
         function checkDateRange() {
@@ -23,35 +138,45 @@
             const endDate = document.getElementById("endDate").value;
             const checkDate = document.getElementById("checkDate").value;
 
-            if (startDate && endDate && checkDate) {
-                // Extract MM-DD from YYYY-MM-DD format
-                const start_md = startDate.substring(5);
-                const end_md = endDate.substring(5);
-                const check_md = checkDate.substring(5);
+            const resultElement = document.getElementById("result");
+            resultElement.classList.remove("success", "error");
 
-                const result = isDateInRange(start_md, end_md, check_md);
-                document.getElementById("result").innerText = result 
-                    ? "✅ The date is within the range!" 
-                    : "❌ The date is NOT within the range.";
+            if (startDate && endDate && checkDate) {
+                // Pass the full date strings directly to the function
+                const result = isDateInRange(startDate, endDate, checkDate);
+                
+                resultElement.classList.add(result ? "success" : "error");
+                resultElement.innerText = result 
+                    ? "The date is within the range!" 
+                    : "The date is NOT within the range.";
             } else {
-                document.getElementById("result").innerText = "⚠️ Please enter all dates.";
+                resultElement.innerText = "Please enter all dates.";
+                resultElement.classList.add("error");
             }
         }
     </script>
 </head>
 <body>
-    <h2>Date Range Checker</h2>
-    <label for="startDate">Start Date:</label>
-    <input type="date" id="startDate"><br><br>
+    <div class="container">
+        <h2>Date Range Checker</h2>
+        <div class="input-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate">
+        </div>
 
-    <label for="endDate">End Date:</label>
-    <input type="date" id="endDate"><br><br>
+        <div class="input-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate">
+        </div>
 
-    <label for="checkDate">Check Date:</label>
-    <input type="date" id="checkDate"><br><br>
+        <div class="input-group">
+            <label for="checkDate">Date to Check:</label>
+            <input type="date" id="checkDate">
+        </div>
 
-    <button onclick="checkDateRange()">Check</button>
+        <button onclick="checkDateRange()">Check Date</button>
 
-    <p id="result"></p>
+        <p id="result"></p>
+    </div>
 </body>
 </html>
