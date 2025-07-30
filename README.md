@@ -27,7 +27,7 @@ Odysseys Costing is a comprehensive trip management and costing application desi
 - Displays additional details such as profit and discount percentages.
 
 ### **4. Dynamic Backend Integration**
-- Uses a SQLite database for managing parks, hotels, and their rates.
+- Uses a MySQL database for managing parks, hotels, and their rates.
 - Processes trip costing dynamically by fetching and calculating data based on user input.
 
 ---
@@ -81,6 +81,6 @@ Odysseys Costing is a comprehensive trip management and costing application desi
   - Dynamic rendering powered by JavaScript.
 - **Back-End**:
   - PHP for handling database interactions and processing requests.
-  - SQLite database for storing parks, hotels, and rate details.
+  - MySQL database for storing parks, hotels, and rate details.
 
 ---

@@ -117,23 +117,17 @@
     ]
 } */
 
-$dbPath = './travel.db';
+$host = 'localhost';
+$dbName = 'angeligh_new';
+$user = 'angeligh_huss';
+$pass = 'husszain$2024';
 
-$pdo = new PDO('sqlite:' . $dbPath);
+$pdo = new PDO("mysql:host=$host;dbname=$dbName;charset=utf8mb4", $user, $pass);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// $host = 'localhost';
-// $dbName = 'angeligh_new'; 
-// $user = 'angeligh_huss'; 
-// $pass = 'husszain$2024';
-
-// $pdo = new PDO("mysql:host=$host;dbname=$dbName;charset=utf8mb4", $user, $pass);
-// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $people = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-
     $data = json_decode(file_get_contents('php://input'), true);
 
     $people = $data['people'];

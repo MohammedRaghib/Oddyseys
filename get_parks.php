@@ -1,9 +1,12 @@
 <?php
 
-$dbFilePath = './travel.db';
+$host = 'localhost';
+$dbName = 'angeligh_new';
+$user = 'angeligh_huss';
+$pass = 'husszain$2024';
 
 try {
-    $pdo = new PDO("sqlite:" . $dbFilePath);
+    $pdo = new PDO("mysql:host=$host;dbname=$dbName;charset=utf8mb4", $user, $pass);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if (isset($_POST['park']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -25,7 +28,7 @@ try {
     }
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-        $for = isset($_GET['for']) ? $_GET['for'] : '';
+        $for = $_GET['for'] ?? '';
 
         if ($for === 'hotelpage') {
             try {
@@ -65,15 +68,15 @@ try {
                 http_response_code(500);
                 echo json_encode(['status' => 'error', 'message' => 'Database error: ' . $e->getMessage()]);
             }
-        }else if($for = 'hotel_info'){
-            $id = isset($_GET['id']) ? $_GET['id'] : '';
+        } else if ($for === 'hotel_info') {
+            $id = $_GET['id'] ?? '';
 
             $get_park_id_query = 'SELECT park_id FROM park_hotels WHERE id = :id';
-            $park_id_stmt = $pdo ->prepare($get_park_id_query);
+            $park_id_stmt = $pdo->prepare($get_park_id_query);
             $park_id_stmt->execute([':id' => $id]);
 
             $get_hotel_detail_query = 'SELECT * FROM hotel_rates WHERE hotel = :hotel';
-            $hotel_detail_stmt = $pdo ->prepare($get_hotel_detail_query);
+            $hotel_detail_stmt = $pdo->prepare($get_hotel_detail_query);
             $hotel_detail_stmt->execute([':hotel' => $id]);
 
             $hotel_detail = $hotel_detail_stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -81,7 +84,7 @@ try {
             $park_id = $park_id_row[0]['park_id'];
 
             $hotel_info = [
-                'parkID'=> $park_id,
+                'parkID' => $park_id,
                 'ranges' => $hotel_detail,
             ];
             echo json_encode(['status' => 'success', 'hotel_info' => $hotel_info]);

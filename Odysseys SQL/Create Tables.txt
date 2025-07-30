@@ -34,7 +34,7 @@ CREATE TABLE park_hotels (
 );
 
 CREATE TABLE hotel_rates (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
     hotel INTEGER NOT NULL,
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
@@ -43,7 +43,7 @@ CREATE TABLE hotel_rates (
 );
 
 CREATE TABLE park_special_fees (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
     park_id INT(11) NOT NULL,
     fees_name VARCHAR(100) COLLATE latin1_swedish_ci NOT NULL,
     currency ENUM('USD', 'KES', 'TZS') COLLATE latin1_swedish_ci NOT NULL,
