@@ -327,13 +327,17 @@
     </aside>
 
     <script>
-        document.querySelectorAll('input').forEach(input => {
-            input.addEventListener('change', () => {
-                postData();
-            })
-        });
+        const attachListenersToRow = (row) => {
+            row.querySelectorAll('input').forEach(input => {
+                input.addEventListener('change', postData);
+            });
+        };
 
         const initial_load = async () => {
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('change', postData);
+            });
+
             try {
                 const response = await fetch('get_parks.php?for=hotelpage');
                 const data = await response.json();
@@ -536,17 +540,18 @@
 
         const addRow = () => {
             const table = document.querySelector('.parks tbody');
-            const row = table.rows[0].cloneNode(true);
-            row.dataset.id = table.rows.length + 1;
+            const newRow = table.rows[0].cloneNode(true);
+            newRow.dataset.id = table.rows.length + 1;
 
-            const inputs = row.querySelectorAll('input');
+            const inputs = newRow.querySelectorAll('input');
             inputs.forEach(input => {
                 input.value = '';
                 input.dataset.id = '';
             });
 
-            table.appendChild(row);
-        }
+            table.appendChild(newRow);
+            attachListenersToRow(newRow);
+        };
 
         const removeRow = (button) => {
             const row = button.closest('tr');
